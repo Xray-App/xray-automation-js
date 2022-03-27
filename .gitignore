@@ -1,0 +1,7 @@
+cloud_auth.json
+example.js
+coverage/
+target/
+.vscode/
+node_modules/
+*.sh
