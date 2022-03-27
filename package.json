@@ -6,7 +6,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "coverage": "NODE_OPTIONS=--experimental-vm-modules jest --coverage"
+    "cov": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "coverage": "NODE_OPTIONS=--experimental-vm-modules jest --json --coverage --testLocationInResults --outputFile=report.json"
   },
   "keywords": [
     "xray",
