@@ -29,3 +29,4 @@ jobs:
       name: jest coverage report
       with:
         test-script: npm run coverage
+        annotations: none
