@@ -29,3 +29,5 @@ jobs:
       name: jest coverage report
       with:
         test-script: npm coverage
+        coverage-file: coverage/coverage-final.json
+        base-coverage-file: coverage/coverage-final.json
