@@ -26,3 +26,6 @@ jobs:
     - run: npm run build --if-present
     - run: npm test
     - uses: ArtiomTr/jest-coverage-report-action@v2
+      name: jest coverage report
+      with:
+        test-script: npm coverage
