@@ -1,5 +1,10 @@
 # Xray client library for automation
 
+[![build workflow](https://github.com/Xray-App/xray-automation-js/actions/workflows/CI.yml/badge.svg)](https://github.com/Xray-App/xray-automation-js/actions/workflows/CI.yml)
+[![license](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/Xray-App/community)
+
+Core features:
 - Xray server/DC and cloud
 - upload test results in different formats
 
