@@ -7,7 +7,7 @@
 `xray-automation` is a JavaScript library to assist on common test automation tasks, such as the ability to upload test results from your pipeline during CI/CD.
 
 
-**Core features:** 
+**Core features:**
 - supports Xray datacenter(DC)/server, and Xray cloud
 - upload test automation results in different formats
 - Promise based (e.g, `.then().catch() ...`)
@@ -165,7 +165,7 @@ let multipartConfig = {
 }
 
 let res = await xrayClient.submitResultsMultipart(file: reportFile, config: multipartConfig);
-const testExecKey = 'CALC-11' // res.data.key or res.data.testExecIssue;
+console.log('Test Execution key: ' + res.key);
 ```
 
 
@@ -176,7 +176,14 @@ However, for some formats (and respective endpoints), this may not be possible. 
 
 
 ```javascript
-let res = await xrayClient.associateTestExecutionToTestPlan(testExecKey, 'CALC-10');
+let testExecKey = 'CALC-11';
+let testPlanKey = 'CALC-10';
+let res = await xrayClient.associateTestExecutionToTestPlan(testExecKey, testPlanKey);
+
+// or if you know the issue ids...
+// let res = await xrayClient.associateTestExecutionToTestPlanByIds('10001', '10000');
+
+console.log('Test Execution key: ' + res.key);
 ```
 
 
