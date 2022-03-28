@@ -1,4 +1,4 @@
-# Xray JavaScript client library for assisting test automation tasks
+# Xray JavaScript client library for assisting on test automation tasks
 
 [![build workflow](https://github.com/Xray-App/xray-automation-js/actions/workflows/CI.yml/badge.svg)](https://github.com/Xray-App/xray-automation-js/actions/workflows/CI.yml)
 [![license](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://opensource.org/licenses/BSD-3-Clause)
@@ -90,7 +90,6 @@ To import results, we need to use the method `submitResults(reportFile, reportCo
 | `testEnvironments` |usually, a [test environment](https://docs.getxray.app/display/XRAYCLOUD/Working+with+Test+Environments) name/identifier (e.g., browser vendor, OS version , mobile device, testing stage) | optional | [chrome] |
 
 
-
 ```javascript
 import { XrayDatacenterClient, XrayCloudClient, JUNIT_FORMAT } from 'xray-automation'
 
@@ -109,9 +108,25 @@ let res = await xrayClient.submitResults(reportFile, reportConfig);
 console.log('Test Execution key: ' + res.key);
 ```
 
+
+Please note that Xray server/DC and Xray cloud support mostly the same formats, but not exactly for legacy reasons. Besides, not all formats support the same parameters; please check the respective product documentation. The following table sums this info.
+
+|reportFormat| supported Xray variant| notes |
+| --- | --- | --- |
+| xray | cloud and server/DC | the format is not exactly the same as Xray and Jira itself are different on server/DC and cloud |
+| junit | cloud and server/DC | |
+| xunit | cloud and server/DC | |
+| nunit | cloud and server/DC | |
+| robot | cloud and server/DC | |
+| testng | cloud and server/DC | |
+| cucumber | cloud and server/DC | in this specific case, it's not possible to use the parameters `projectKey`, `version`, `revision`, `testPlanKey`, `testExecKey`, `testEnvironments` (due to the way the underlying "standard" endpoint for Cucumber works)  |
+| behave | server/DC | in this specific case, it's not possible to use the parameters `projectKey`, `version`, `revision`, `testPlanKey`, `testExecKey`, `testEnvironments` (due to the way the underlying "standard" endpoint for Cucumber works). For Xray cloud, it's possible to convert it to a cucumber JSON report though and then import it as [shown on this tutorial](https://docs.getxray.app/display/XRAYCLOUD/Testing+using+Behave+in+Python) |
+
+
+
 ### Import test results to Xray with customization of Test Execution and Test issues (advanced scenario)
 
-Related to ech report format (e.g., "junit") , there's a "standard" endpoint (e.g., ".../import/junit") and a "multipart" endpoint one (e.g., ".../import/junit/multipart")
+Related to each report format (e.g., "junit") , there's a "standard" endpoint (e.g., ".../import/junit") and a "multipart" endpoint one (e.g., ".../import/junit/multipart")
 
 The "standard" Xray REST API endpoints allow us to pass some well-known parameters to identify the target project and its version, for example.
 However, sometimes we may need to customize additional fields on the Test Execution issue that will be created whenever uploading test results.
@@ -119,10 +134,12 @@ For that, we have to use the "multipart" endpoint which has a completely differe
 
 
 To import results with customization possibilities, which internally will use the proper "multipart" endpoint for that test report format, we need to use the method `submitResultsMultipart(reportFile, reportConfig)` on the respective Xray client object.
+- `reportFile`: file with the test results (relative or absolute path)
+- `reportConfig`: an object with additional settings; possible values on the table ahead.
 
-
-
-
+| setting | description | mandatory/optional| example |
+| --- | --- | --- | --- |
+| `format` | format of the report (import&use JUNIT_FORMAT, TESTNG_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, ROBOT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT, XRAY_FORMAT) | mandatory | XRAY_FORMAT (or "xray") |
 
 
 ```
@@ -160,53 +177,6 @@ However, for some formats (and respective endpoints), this may not be possible. 
 
 ```javascript
 let res = await xrayClient.associateTestExecutionToTestPlan(testExecKey, 'CALC-10');
-```
-
-## Auxiliary info: Xray REST API response examples
-
-This info is just for reference. You don't need to worry about this as the responses will be encapsulated in proper objects.
-
-### Xray cloud (API v2)
-
-```js
-{
-  "id": "10200",
-  "key": "XNP-24",
-  "self": "https://www.example.com/rest/api/2/issue/10200"
-}
-```
-
-### Xray server/DC (API v2)
-
-```js
-{
-  "testExecIssue": {
-    "id": "38101",
-    "key": "TMP-82",
-    "self": "http://localhost:30000/rest/api/2/issue/38101"
-  },
-  "testIssues": {
-    "success": [
-      {
-        "self": "http://localhost:30000/rest/api/2/issue/36600",
-        "id": "36600",
-        "key": "TMP-1"
-      }
-    ]
-  }
-}
-```
-
-### Xray server/DC (API v1)
-
-```js
-{
-  "testExecIssue": {
-    "id": "10200",
-    "key": "XNP-24",
-    "self": "http://www.example.com/jira/rest/api/2/issue/10200"
-  }
-}
 ```
 
 
