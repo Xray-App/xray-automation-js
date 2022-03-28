@@ -4,6 +4,11 @@ let config = {
             lines: 80,
         },
     },
+  coverageReporters: [
+    "json-summary", 
+    "text",
+    "lcov"
+  ]
 };
 export default config;
 
