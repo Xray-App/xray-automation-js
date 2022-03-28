@@ -17,7 +17,7 @@
 
 ## Background
 
-This libbrary provides an abstraction layer for the underlying APIs that Xray provides on the different Jira deployment flavours.
+This library provides an abstraction layer for the underlying APIs that Xray provides on the different Jira deployment flavours.
 Xray provides different kinds of APIs and also different endpoints to support importing of test results in different format.
 Xray's REST API is the main API used for this purpose. It's available both on Xray datacenter/server and also on Xray cloud; there some slight differences between them.
 The REST API provides the ability to import results (both on Xray DC/server and Xray cloud), and also the ability to manage the relation between entities  (Xray DC/server only).
