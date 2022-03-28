@@ -2533,3 +2533,54 @@ describe('Xray JSON multipart endpoint', () => {
 
     });
 });
+
+describe('associateTestExecutionToTestPlan', () => {
+  let mock;
+  let xrayClient;
+  const successfulResponseData = [];
+  const errorResponseData = [ "Issue with key CALC-11 not found or is not of type Test Execution."]
+
+  beforeEach(() => {
+    mock = new MockAdapter(axios);
+    const xrayServerSettings = {
+      jiraBaseUrl: 'http://xray.example.com',
+      jiraUsername: 'username',
+      jiraPassword: 'password'
+    }; 
+    xrayClient = new XrayDatacenterClient(xrayServerSettings);
+  });
+  
+  afterEach(() => {
+    mock.resetHistory();
+  });
+
+
+  it('associates a Test Execution to a Test Plan, for a valid request and successful authentication', async() => {
+    mock.onPost('http://xray.example.com/rest/raven/2.0/api/testplan/CALC-10/testexecution').reply(200, successfulResponseData);
+
+    try {
+      let testExecIssueKey = "CALC-11";
+      let testPlanIssueKey = "CALC-10";
+      let res = await xrayClient.associateTestExecutionToTestPlan(testExecIssueKey, testPlanIssueKey);
+      expect(mock.history.post[0].data).toEqual("{\"add\":[\"CALC-11\"]}");
+      expect(res).toEqual(testExecIssueKey);
+    } catch (error) {
+      throw error;
+    }
+  });
+
+  it('returns error if failed to associate a Test Execution to a Test Plan', async() => {
+    mock.onPost('http://xray.example.com/rest/raven/2.0/api/testplan/CALC-10/testexecution').reply(200, errorResponseData);
+
+    try {
+      let testExecIssueKey = "CALC-11";
+      let testPlanIssueKey = "CALC-10";
+      let res = await xrayClient.associateTestExecutionToTestPlan(testExecIssueKey, testPlanIssueKey);
+      throw new Error(); // should not come here
+    } catch (error) {
+      expect(mock.history.post[0].data).toEqual("{\"add\":[\"CALC-11\"]}");
+      expect(error._response).toEqual(errorResponseData[0]);
+    }
+  });
+
+});

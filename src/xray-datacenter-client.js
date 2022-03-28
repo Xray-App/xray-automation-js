@@ -169,6 +169,34 @@ class XrayDatacenterClient {
 
     }
 
+    async associateTestExecutionToTestPlan(testExecKey, testPlanKey) {		
+        var authorizationHeaderValue;
+        if (this.jiraToken !== undefined) {
+            authorizationHeaderValue = 'Bearer ' + this.jiraToken;
+        } else {
+            authorizationHeaderValue = 'Basic ' + btoa(this.jiraUsername + ':' + this.jiraPassword);
+        }
+
+        let content = {
+            "add" : [ testExecKey ]
+        }
+
+        let endpointUrl = `${this.jiraBaseUrl}/rest/raven/2.0/api/testplan/${testPlanKey}/testexecution`;
+        return axios.post(endpointUrl, content, {
+            headers: { 'Authorization': authorizationHeaderValue, 'Content-Type': 'application/json' }
+        }).then(function(response) {
+            if (response.data.length == 0)
+                return testExecKey;
+            else
+                throw new XrayErrorResponse(response.data[0])
+        }).catch(function(error) {
+            if (error instanceof XrayErrorResponse)
+                throw error;
+            else
+                throw new XrayErrorResponse(error.response);
+        }); 
+    }
+
 }
 
 //module.exports = XrayDatacenterClient;

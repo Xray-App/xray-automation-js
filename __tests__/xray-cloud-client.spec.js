@@ -2610,13 +2610,13 @@ describe('graphQL: associateTestExecutionToTestPlanByIds', () => {
             let testExecIssueId = "10001";
             let testPlanIssueId = "10000";
             let res = await xrayClient.associateTestExecutionToTestPlanByIds(testExecIssueId, testPlanIssueId);
+            throw new Error(); // should not come here
         } catch (error) {
             expect(mock.history.post[0].data).toEqual("{\"client_id\":\"0000000000\",\"client_secret\":\"1111111111\"}");
             // expect(res._response.data.addTestExecutionsToTestPlan.addedTestExecutions[0]).toEqual(testExecIssueId);
             //expect(res._response.errors[0].message).toEqual("User doesn't have permissions to edit issue with id 10000");
             expect(error.errorMessages.length).toBe(1);
             expect(error.errorMessages[0]).toEqual("User doesn't have permissions to edit issue with id 10000");
-            //throw error;
         }
     });
 
