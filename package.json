@@ -10,6 +10,13 @@
     "cov": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "coverage": "NODE_OPTIONS=--experimental-vm-modules jest --json --coverage --testLocationInResults --outputFile=report.json"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Xray-App/xray-automation-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Xray-App/xray-automation-js/issues"
+  },
   "keywords": [
     "xray",
     "testing",
