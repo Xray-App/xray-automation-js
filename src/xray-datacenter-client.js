@@ -4,7 +4,7 @@ import fs from 'fs';
 import FormData from 'form-data';
 
 import XrayErrorResponse from './xray-error-response.js';
-import XrayDatacenterResponseV1 from './xray-datacenter-response-v1.js';
+//import XrayDatacenterResponseV1 from './xray-datacenter-response-v1.js';
 import XrayDatacenterResponseV2 from './xray-datacenter-response-v2.js';
 import { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT } from './index.js';
 
@@ -135,7 +135,7 @@ class XrayDatacenterClient {
             if (config.testInfoFile !== undefined)
                 testInfoContent = fs.readFileSync(config.testInfoFile).toString();
             if (config.testInfo !== undefined)
-                tesInfoContent = config.testInfo.toString();
+                testInfoContent = config.testInfo.toString();
             if (config.testExecInfoFile !== undefined)
                 testExecInfoContent = fs.readFileSync(config.testExecInfoFile).toString();
             else

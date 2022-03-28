@@ -8,20 +8,20 @@ const  XrayServerResponseV1 = require('../src/xray-server-response-v1.js')
 const  XrayDatacenterResponseV2 = require('../src/xray-server-response-v2.js')
 */
 
+import {describe, expect, it, afterEach, beforeEach} from '@jest/globals'
 import axios from 'axios';
 import fs from 'fs';
 import MockAdapter from 'axios-mock-adapter';
 import multipart from 'parse-multipart-data';
 
 import XrayDatacenterClient from '../src/xray-datacenter-client.js';
-import XrayErrorResponse from '../src/xray-error-response.js';
-import XrayDatacenterResponseV2 from '../src/xray-datacenter-response-v2.js';
+//import XrayErrorResponse from '../src/xray-error-response.js';
+//import XrayDatacenterResponseV2 from '../src/xray-datacenter-response-v2.js';
 import { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT } from '../src/index.js';
 
 
 describe('authentication', () => {
   let mock;
-  let xrayClient;
   let reportFile = '__tests__/resources/robot.xml';
   const successfulResponseData = {
     "testExecIssue": {
@@ -68,14 +68,11 @@ describe('authentication', () => {
         format: ROBOT_FORMAT,
         projectKey: 'CALC'
       }
-      try {
-          let response = await xrayClient.submitResults(reportFile, reportConfig);
-          expect(response._response.config.headers['Authorization']).toEqual("Basic dXNlcm5hbWU6cGFzc3dvcmQ=")
-          expect(response._response.status).toEqual(200);
-          expect(response._response.data).toEqual(successfulResponseData);
-      } catch (error) {
-          throw error;
-      }
+
+      let response = await xrayClient.submitResults(reportFile, reportConfig);
+      expect(response._response.config.headers['Authorization']).toEqual("Basic dXNlcm5hbWU6cGFzc3dvcmQ=")
+      expect(response._response.status).toEqual(200);
+      expect(response._response.data).toEqual(successfulResponseData);
 
   });
 
@@ -93,14 +90,11 @@ describe('authentication', () => {
         format: ROBOT_FORMAT,
         projectKey: 'CALC'
       }
-      try {
-          let response = await xrayClient.submitResults(reportFile, reportConfig);
-          expect(response._response.config.headers['Authorization']).toEqual('Bearer OTE0ODc2NDE2NTgxOnrhigwOreFoyNIA9lXTZaOcgbNY')
-          expect(response._response.status).toEqual(200);
-          expect(response._response.data).toEqual(successfulResponseData);
-      } catch (error) {
-          throw error;
-      }
+
+      let response = await xrayClient.submitResults(reportFile, reportConfig);
+      expect(response._response.config.headers['Authorization']).toEqual('Bearer OTE0ODc2NDE2NTgxOnrhigwOreFoyNIA9lXTZaOcgbNY')
+      expect(response._response.status).toEqual(200);
+      expect(response._response.data).toEqual(successfulResponseData);
 
   });
 });
@@ -985,11 +979,8 @@ describe('Behave standard endpoint', () => {
       revision: '123',
       testEnvironment: 'chrome'
     }
-    try {
-      let response = await xrayClient.submitResults(reportFile, reportConfig);
-    } catch (error) {
-      throw error;
-    }
+    await xrayClient.submitResults(reportFile, reportConfig);
+
   });
 
 
@@ -999,15 +990,13 @@ describe('Behave standard endpoint', () => {
     let reportConfig = {
       format: BEHAVE_FORMAT
     }
-    try {
-      let response = await xrayClient.submitResults(reportFile, reportConfig);
 
-      expect(mock.history.post.length).toBe(1);
-      let reportContent = fs.readFileSync(reportFile).toString('utf-8');
-      expect(mock.history.post[0].data).toEqual(reportContent);
-    } catch (error) {
-      throw error;
-    }
+    await xrayClient.submitResults(reportFile, reportConfig);
+
+    expect(mock.history.post.length).toBe(1);
+    let reportContent = fs.readFileSync(reportFile).toString('utf-8');
+    expect(mock.history.post[0].data).toEqual(reportContent);
+
   });
 
   it('returns Test Execution data when submitResults is called with success', async() => {
@@ -1016,15 +1005,12 @@ describe('Behave standard endpoint', () => {
         let reportConfig = {
           format: BEHAVE_FORMAT
         }
-        try {
-          let response = await xrayClient.submitResults(reportFile, reportConfig);
-          expect(response._response.data).toEqual(successfulResponseData);
-          expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-          expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-          expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
-        } catch (error) {
-          throw error;
-        }
+
+        let response = await xrayClient.submitResults(reportFile, reportConfig);
+        expect(response._response.data).toEqual(successfulResponseData);
+        expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
+        expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
+        expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
 
     });
 });
@@ -1164,7 +1150,7 @@ describe('JUnit multipart endpoint', () => {
 
     let reportConfig = { format: JUNIT_FORMAT };
     try {
-      let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
+      await xrayClient.submitResultsMultipart(reportFile, reportConfig);
     } catch (error) {
       expect(error._response).toEqual('ERROR: testExecInfoFile or testExecInfo must be defined');
     }
@@ -1188,32 +1174,30 @@ describe('JUnit multipart endpoint', () => {
     }
     
     }
-    try {
-      let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
 
-      expect(mock.history.post.length).toBe(1);
-      const rawFormData = mock.history.post[0].data.getBuffer().toString('utf-8');
-      const boundary = mock.history.post[0].data.getBoundary();
-      const parts = multipart.parse(Buffer.from(rawFormData), boundary);
-      expect(parts.length).toBe(2);
+    await xrayClient.submitResultsMultipart(reportFile, reportConfig);
 
-      // parse-multipart-data has a bug which doesnt process "name" and "filename" attributes at the same time
-      // and only assigns "filename" on the returned parsed part.
-      // besides, it assumes "name" and "filename" appear in this exact order on the header
-      expect(rawFormData).toEqual(expect.stringContaining(' name="file"'));
-      expect(rawFormData).toEqual(expect.stringContaining(' name="info"'));
+    expect(mock.history.post.length).toBe(1);
+    const rawFormData = mock.history.post[0].data.getBuffer().toString('utf-8');
+    const boundary = mock.history.post[0].data.getBoundary();
+    const parts = multipart.parse(Buffer.from(rawFormData), boundary);
+    expect(parts.length).toBe(2);
 
-      expect(parts[0].filename).toEqual('report.xml');
-      expect(parts[0].type).toEqual('application/xml');
-      let reportContent = fs.readFileSync(reportFile).toString('utf-8');
-      let partContent = parts[0].data.toString('utf-8')
-      expect(partContent).toEqual(reportContent);
-      expect(parts[1].filename).toEqual('info.json');
-      expect(parts[1].type).toEqual('application/json');
-      expect(parts[1].data.toString('utf-8')).toEqual(reportConfig.testExecInfo.toString('utf-8'));
-    } catch (error) {
-      throw error;
-    }
+    // parse-multipart-data has a bug which doesnt process "name" and "filename" attributes at the same time
+    // and only assigns "filename" on the returned parsed part.
+    // besides, it assumes "name" and "filename" appear in this exact order on the header
+    expect(rawFormData).toEqual(expect.stringContaining(' name="file"'));
+    expect(rawFormData).toEqual(expect.stringContaining(' name="info"'));
+
+    expect(parts[0].filename).toEqual('report.xml');
+    expect(parts[0].type).toEqual('application/xml');
+    let reportContent = fs.readFileSync(reportFile).toString('utf-8');
+    let partContent = parts[0].data.toString('utf-8')
+    expect(partContent).toEqual(reportContent);
+    expect(parts[1].filename).toEqual('info.json');
+    expect(parts[1].type).toEqual('application/json');
+    expect(parts[1].data.toString('utf-8')).toEqual(reportConfig.testExecInfo.toString('utf-8'));
+
   });
 
   it('sends the correct payload when submitResultsMultipart is called with Test Execution info in a file', async() => {
@@ -1223,33 +1207,30 @@ describe('JUnit multipart endpoint', () => {
       format: JUNIT_FORMAT,
       testExecInfoFile: '__tests__/resources/testExecInfo.json',
     }
-    try {
-      let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
 
-      expect(mock.history.post.length).toBe(1);
-      const rawFormData = mock.history.post[0].data.getBuffer().toString('utf-8');
-      const boundary = mock.history.post[0].data.getBoundary();
-      const parts = multipart.parse(Buffer.from(rawFormData), boundary);
-      expect(parts.length).toBe(2);
+    await xrayClient.submitResultsMultipart(reportFile, reportConfig);
 
-      // parse-multipart-data has a bug which doesnt process "name" and "filename" attributes at the same time
-      // and only assigns "filename" on the returned parsed part.
-      // besides, it assumes "name" and "filename" appear in this exact order on the header
-      expect(rawFormData).toEqual(expect.stringContaining(' name="file"'));
-      expect(rawFormData).toEqual(expect.stringContaining(' name="info"'));
+    expect(mock.history.post.length).toBe(1);
+    const rawFormData = mock.history.post[0].data.getBuffer().toString('utf-8');
+    const boundary = mock.history.post[0].data.getBoundary();
+    const parts = multipart.parse(Buffer.from(rawFormData), boundary);
+    expect(parts.length).toBe(2);
 
-      expect(parts[0].filename).toEqual('report.xml');
-      expect(parts[0].type).toEqual('application/xml');
-      let reportContent = fs.readFileSync(reportFile).toString('utf-8');
-      let partContent = parts[0].data.toString('utf-8')
-      expect(partContent).toEqual(reportContent);
-      expect(parts[1].filename).toEqual('info.json');
-      expect(parts[1].type).toEqual('application/json');
-      expect(parts[1].data.toString('utf-8')).toEqual(fs.readFileSync(reportConfig.testExecInfoFile).toString('utf-8'));
-    } catch (error) {
-        
-        throw error;
-    }
+    // parse-multipart-data has a bug which doesnt process "name" and "filename" attributes at the same time
+    // and only assigns "filename" on the returned parsed part.
+    // besides, it assumes "name" and "filename" appear in this exact order on the header
+    expect(rawFormData).toEqual(expect.stringContaining(' name="file"'));
+    expect(rawFormData).toEqual(expect.stringContaining(' name="info"'));
+
+    expect(parts[0].filename).toEqual('report.xml');
+    expect(parts[0].type).toEqual('application/xml');
+    let reportContent = fs.readFileSync(reportFile).toString('utf-8');
+    let partContent = parts[0].data.toString('utf-8')
+    expect(partContent).toEqual(reportContent);
+    expect(parts[1].filename).toEqual('info.json');
+    expect(parts[1].type).toEqual('application/json');
+    expect(parts[1].data.toString('utf-8')).toEqual(fs.readFileSync(reportConfig.testExecInfoFile).toString('utf-8'));
+
   });
 
   it('sends the correct payload when submitResultsMultipart is called with Test Execution and Tests info from files', async() => {
@@ -2123,7 +2104,7 @@ describe('Cucumber multipart endpoint', () => {
 
     let reportConfig = { format: CUCUMBER_FORMAT };
     try {
-      let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
+      await xrayClient.submitResultsMultipart(reportFile, reportConfig);
     } catch (error) {
       expect(error._response).toEqual('ERROR: testExecInfoFile or testExecInfo must be defined');
     }
@@ -2220,16 +2201,12 @@ describe('Cucumber multipart endpoint', () => {
           testInfoFile: '__tests__/resources/testInfo.json',
           testExecInfoFile: '__tests__/resources/testExecInfo.json'
         }
-        try {
-            let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
-            expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
-        } catch (error) {
-            
-            throw error;
-        }
+
+        let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
+        expect(response._response.data).toEqual(successfulResponseData);
+        expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
+        expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
+        expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
 
     });
 });
@@ -2558,15 +2535,12 @@ describe('associateTestExecutionToTestPlan', () => {
   it('associates a Test Execution to a Test Plan, for a valid request and successful authentication', async() => {
     mock.onPost('http://xray.example.com/rest/raven/2.0/api/testplan/CALC-10/testexecution').reply(200, successfulResponseData);
 
-    try {
-      let testExecIssueKey = "CALC-11";
-      let testPlanIssueKey = "CALC-10";
-      let res = await xrayClient.associateTestExecutionToTestPlan(testExecIssueKey, testPlanIssueKey);
-      expect(mock.history.post[0].data).toEqual("{\"add\":[\"CALC-11\"]}");
-      expect(res).toEqual(testExecIssueKey);
-    } catch (error) {
-      throw error;
-    }
+    let testExecIssueKey = "CALC-11";
+    let testPlanIssueKey = "CALC-10";
+    let res = await xrayClient.associateTestExecutionToTestPlan(testExecIssueKey, testPlanIssueKey);
+    expect(mock.history.post[0].data).toEqual("{\"add\":[\"CALC-11\"]}");
+    expect(res).toEqual(testExecIssueKey);
+
   });
 
   it('returns error if failed to associate a Test Execution to a Test Plan', async() => {
@@ -2575,7 +2549,7 @@ describe('associateTestExecutionToTestPlan', () => {
     try {
       let testExecIssueKey = "CALC-11";
       let testPlanIssueKey = "CALC-10";
-      let res = await xrayClient.associateTestExecutionToTestPlan(testExecIssueKey, testPlanIssueKey);
+      await xrayClient.associateTestExecutionToTestPlan(testExecIssueKey, testPlanIssueKey);
       throw new Error(); // should not come here
     } catch (error) {
       expect(mock.history.post[0].data).toEqual("{\"add\":[\"CALC-11\"]}");

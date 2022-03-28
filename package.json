@@ -1,11 +1,12 @@
 {
-  "name": "xray-automation",
+  "name": "@xray-app/xray-automation",
   "version": "0.1.0",
   "description": "Library for uploading test results to Xray Test Management",
   "type": "module",
   "main": "src/index.js",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
+    "lint": "eslint '**/*.js' --ignore-pattern node_modules/ --ignore-pattern '__tests__/*.spec.js'",
     "cov": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "coverage": "NODE_OPTIONS=--experimental-vm-modules jest --json --coverage --testLocationInResults --outputFile=report.json"
   },
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "axios-mock-adapter": "^1.20.0",
+    "eslint": "^8.12.0",
     "jest": "^27.5.1",
     "nock": "^13.2.4",
     "parse-multipart-data": "^1.2.1"

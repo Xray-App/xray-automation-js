@@ -1,3 +1,4 @@
+import {describe, expect, it, afterEach, beforeEach} from '@jest/globals'
 import axios from 'axios';
 import nock from 'nock';
 import fs from 'fs';
@@ -5,10 +6,10 @@ import MockAdapter from 'axios-mock-adapter';
 import multipart from 'parse-multipart-data';
 
 import XrayCloudClient from '../src/xray-cloud-client.js';
-import XrayErrorResponse from '../src/xray-error-response.js';
-import XrayCloudResponseV2 from '../src/xray-cloud-response-v2.js';
-import XrayCloudGraphQLResponseV2 from '../src/xray-cloud-graphql-response-v2.js';
-import { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT } from '../src/index.js';
+//import XrayErrorResponse from '../src/xray-error-response.js';
+//import XrayCloudResponseV2 from '../src/xray-cloud-response-v2.js';
+//import XrayCloudGraphQLResponseV2 from '../src/xray-cloud-graphql-response-v2.js';
+import { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT } from '../src/index.js';
 
 const xrayCloudBaseUrl = "https://xray.cloud.getxray.app/api/v2";        
 const authenticateUrl = xrayCloudBaseUrl + "/authenticate";
