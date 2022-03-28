@@ -146,7 +146,7 @@ To import results with customization possibilities, which internally will use th
 | `testInfo | JSON object containing attributes to apply on the Test issues that may be created, following Jira issue update syntax | optional | - |
 
 
-```
+```javascript
 import { XrayDatacenterClient, XrayCloudClient, JUNIT_FORMAT } from 'xray-automation'
 
 ...
