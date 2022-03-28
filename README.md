@@ -26,7 +26,7 @@ The GraphQL API is only available on Xray cloud; it provides the ability to mana
 ## Installation
 
 ```bash
-npm i xray-automation
+npm i @xray-app/xray-automation
 ```
 
 ## Usage
@@ -38,14 +38,14 @@ This library provides two main objects, `XrayDatacenterClient` and `XrayCloudCli
 For Xray cloud we need to use a client id + client secret pair, from a API key defined in Xray. Please see [API keys (client id + client secret pair) on Xray cloud](https://docs.getxray.app/display/XRAYCLOUD/Global+Settings%3A+API+Keys).
 
 ```javascript
-import { XrayCloudClient } from 'xray-automation'
+import { XrayCloudClient } from '@xray-app/xray-automation'
 
 const xrayCloudSettings = {
     clientId: '0000000000',
     clientSecret: '1111111111'
 }; 
 
-const xrayClient = XrayCloudClient(xrayCloudSettings);
+const xrayClient = new XrayCloudClient(xrayCloudSettings);
 ```
 
 
@@ -53,7 +53,7 @@ For Xray server/datacenter, we can use basic authentication and provide a Jira u
 For Xray datacenter on a compatible Jira DC version (>= 8.14), we can also use PAN (Personal Access Tokens).
 
 ```javascript
-import { XrayDatacenterClient } from 'xray-automation'
+import { XrayDatacenterClient } from '@xray-app/xray-automation'
 
 const configWithCredentials = {
     jiraBaseUrl: 'http://myserver.jira.local',
@@ -68,7 +68,7 @@ const configUsingToken = {
     jiraToken: 'xxxxxx',
 };
 
-const xrayClient = XrayDatacenterClient(configWithXXX);
+const xrayClient = new XrayDatacenterClient(configWithXXX);
 ```
 
 
@@ -91,7 +91,7 @@ To import results, we need to use the method `submitResults(reportFile, reportCo
 
 
 ```javascript
-import { XrayDatacenterClient, XrayCloudClient, JUNIT_FORMAT } from 'xray-automation'
+import { XrayDatacenterClient, XrayCloudClient, JUNIT_FORMAT } from '@xray-app/xray-automation'
 
 let reportFile = 'report.xml';
 let reportConfig = {
