@@ -182,6 +182,32 @@ let res = await xrayClient.associateTestExecutionToTestPlan(testExecKey, testPla
 console.log('Test Execution key: ' + res.key);
 ```
 
+## Other tips
+
+### Implementing a retry strategy
+
+To implement retries, for example if the server is giving some error such as telling you that you've surpassed the allowed thorughput limit (HTTP status code 429), you can use the [promise-retry](https://www.npmjs.com/package/promise-retry) package and implement something like the following snippet of code.
+
+```javascript
+    promiseRetry(function (retry, number) {
+        console.log('attempt number', number);
+
+        return xrayClient.submitResults(reportFile, reportConfig)
+        .catch(function (error) {
+            if (error.response.status === 429) {
+                retry(error);
+            }
+            throw error;
+        });
+    }, { retries: 2 })
+    .then(function (response) {
+        console.log('test_exec: '+ response.key);
+    }, function (error) {
+        console.log('response: '+ error._response);
+        console.log('HTTP STATUS CODE: '+ error.statusCode);
+    });
+```
+
 ## FAQ
 
 1. If we have questions/support issues, where should those be addressed?
