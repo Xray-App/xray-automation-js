@@ -218,6 +218,7 @@ TBD
 ## TO DOs
 
 - implement cucumber related operations/endpoints
+- timeout configuration
 - jest coverage badge
 - npm badge
 - review/refactor tests
