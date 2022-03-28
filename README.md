@@ -219,7 +219,10 @@ TBD
 
 - implement cucumber related operations/endpoints
 - jest coverage badge
+- npm badge
+- review/refactor tests
 - REST API v1 support?
+- review error handling
 - review modules support
 - convert to TypeScript
 
