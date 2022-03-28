@@ -4,6 +4,7 @@
 [![build workflow](https://github.com/Xray-App/xray-automation-js/actions/workflows/CI.yml/badge.svg)](https://github.com/Xray-App/xray-automation-js/actions/workflows/CI.yml)
 [![license](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/Xray-App/community)
+[![npm downloads](https://img.shields.io/npm/dm/@xray-app/xray-automation.svg?style=flat-square)](http://npm-stat.com/charts.html?package=@xray-app/xray-automation)
 
 `xray-automation` is a JavaScript library to assist on common test automation tasks, such as the ability to upload test results to [Xray](https://getxray.app) and Jira from your pipeline during CI/CD.
 
@@ -217,6 +218,15 @@ It's an open-source project, so it should be handled in this GitHub project and 
 2. Are the underlying APIs the same for Xray server/datacenter and Xray Cloud? Are the available options the same? Are the supported test automation report formats the same?
 
 Not exactly. Xray server/datacenter and Xray cloud, even though similar, are actually distinct products; besides Jira server/datacenter and Jira cloud are different between themselves and have different capabilities. This plugin makes use of the available REST APIs for Xray server/datacenter and Xray cloud, so you should check them to see exactly what is supported for your environment.
+
+3. Do I need to use this library to upload test results to Xray? Can't we use something more tailored to our own CI/CD tool?
+
+Xray provides several free plugins for Jenkins, Bamboo, and TeamCity. You can use them out-of-the-box.
+In [Xray documentation](https://docs.getxray.app/display/XRAYCLOUD/Integrations), you may find more info about these and other instructions on how to upload test results from other CI/CD tools.
+
+4. So, if you have specific plugins/instructions for the most diverse CI/CD tools... why do you need this library?
+
+Sometimes teams may want to manage the logic for uploading test results (e.g., after finishing some task/event). This library can be useful in those scenarios, if you're using JavaScript and NodeJS.
 
 ## Contact
 
