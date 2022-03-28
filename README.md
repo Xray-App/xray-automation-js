@@ -5,7 +5,7 @@
 [![license](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/Xray-App/community)
 
-`xray-automation` is a JavaScript library to assist on common test automation tasks, such as the ability to upload test results from your pipeline during CI/CD.
+`xray-automation` is a JavaScript library to assist on common test automation tasks, such as the ability to upload test results to [Xray](https://getxray.app) and Jira from your pipeline during CI/CD.
 
 **Core features:**
 
