@@ -1,19 +1,19 @@
 # Xray JavaScript client library for assisting on test automation tasks
 
+[![npm version](https://img.shields.io/npm/v/@xray-app/xray-automation.svg?style=flat-square)](https://www.npmjs.com/package/@xray-app/xray-automation)
 [![build workflow](https://github.com/Xray-App/xray-automation-js/actions/workflows/CI.yml/badge.svg)](https://github.com/Xray-App/xray-automation-js/actions/workflows/CI.yml)
 [![license](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/Xray-App/community)
 
 `xray-automation` is a JavaScript library to assist on common test automation tasks, such as the ability to upload test results from your pipeline during CI/CD.
 
-
 **Core features:**
+
 - supports Xray datacenter(DC)/server, and Xray cloud
 - upload test automation results in different formats
 - Promise based (e.g, `.then().catch() ...`)
 - upload results with standard parameters to identify Jira project, its version, revision, test environment..
 - upload results with ability to fully customize Test Execution and Test issues, using a more low-level request (that uses the "multipart" endpoint variant)
-
 
 ## Background
 
@@ -31,7 +31,7 @@ npm i @xray-app/xray-automation
 
 ## Usage
 
-This library provides two main objects, `XrayDatacenterClient` and `XrayCloudClient`, that provide the ability to interact with Xray on Jira datacenter/server or with Xray on Jira Cloud, respectively. Therefore, and first of all, you must know which Jira deployment variant you're using. 
+This library provides two main objects, `XrayDatacenterClient` and `XrayCloudClient`, that provide the ability to interact with Xray on Jira datacenter/server or with Xray on Jira Cloud, respectively. Therefore, and first of all, you must know which Jira deployment variant you're using.
 
 ### Client initialization and configuration
 
@@ -47,7 +47,6 @@ const xrayCloudSettings = {
 
 const xrayClient = new XrayCloudClient(xrayCloudSettings);
 ```
-
 
 For Xray server/datacenter, we can use basic authentication and provide a Jira username/password.
 For Xray datacenter on a compatible Jira DC version (>= 8.14), we can also use PAN (Personal Access Tokens).
@@ -71,13 +70,12 @@ const configUsingToken = {
 const xrayClient = new XrayDatacenterClient(configWithXXX);
 ```
 
-
 ### Import test results to Xray (basic scenario)
 
 To import results, we need to use the method `submitResults(reportFile, reportConfig)` on the respective Xray client object.
+
 - `reportFile`: file with the test results (relative or absolute path)
 - `reportConfig`: an object with additional settings, mostly to assign values on the corresponding Test Execution issue; possible values on the table ahead.
-
 
 | setting | description | mandatory/optional| example |
 | --- | --- | --- | --- |
@@ -88,7 +86,6 @@ To import results, we need to use the method `submitResults(reportFile, reportCo
 | `version` | ersion of the SUT, that corresponds to the Jira project version/release; it will be assigned to the Test Execution issue using the "fixVersion(s)" field | optional | 1.0 |
 | `revision` | `xray.revision` | source code revision or a build identifier | optional | 123 |
 | `testEnvironments` |usually, a [test environment](https://docs.getxray.app/display/XRAYCLOUD/Working+with+Test+Environments) name/identifier (e.g., browser vendor, OS version , mobile device, testing stage) | optional | [chrome] |
-
 
 ```javascript
 import { XrayDatacenterClient, XrayCloudClient, JUNIT_FORMAT } from '@xray-app/xray-automation'
@@ -108,7 +105,6 @@ let res = await xrayClient.submitResults(reportFile, reportConfig);
 console.log('Test Execution key: ' + res.key);
 ```
 
-
 Please note that Xray server/DC and Xray cloud support mostly the same formats, but not exactly for legacy reasons. Besides, not all formats support the same parameters; please check the respective product documentation. The following table sums this info.
 
 |report format| supported Xray variant| notes |
@@ -122,8 +118,6 @@ Please note that Xray server/DC and Xray cloud support mostly the same formats, 
 | cucumber | cloud and server/DC | in this specific case, it's not possible to use the parameters `projectKey`, `version`, `revision`, `testPlanKey`, `testExecKey`, `testEnvironments` (due to the way the underlying "standard" endpoint for Cucumber works)  |
 | behave | server/DC | in this specific case, it's not possible to use the parameters `projectKey`, `version`, `revision`, `testPlanKey`, `testExecKey`, `testEnvironments` (due to the way the underlying "standard" endpoint for Cucumber works). For Xray cloud, it's possible to convert it to a cucumber JSON report though and then import it as [shown on this tutorial](https://docs.getxray.app/display/XRAYCLOUD/Testing+using+Behave+in+Python) |
 
-
-
 ### Import test results to Xray with customization of Test Execution and Test issues (advanced scenario)
 
 Related to each report format (e.g., "junit") , there's a "standard" endpoint (e.g., ".../import/junit") and a "multipart" endpoint one (e.g., ".../import/junit/multipart")
@@ -132,8 +126,8 @@ The "standard" Xray REST API endpoints allow us to pass some well-known paramete
 However, sometimes we may need to customize additional fields on the Test Execution issue that will be created whenever uploading test results.
 For that, we have to use the "multipart" endpoint which has a completely different syntax. 
 
-
 To import results with customization possibilities, which internally will use the proper "multipart" endpoint for that test report format, we need to use the method `submitResultsMultipart(reportFile, reportConfig)` on the respective Xray client object.
+
 - `reportFile`: file with the test results (relative or absolute path)
 - `reportConfig`: an object with additional settings; possible values on the table ahead.
 
@@ -144,7 +138,6 @@ To import results with customization possibilities, which internally will use th
 | `testExecInfo` | JSON object containing attributes to apply on the Test Execution issue that will be created, following Jira issue update syntax | mandatory (if testExecInfoFile is not provided) | - |
 | `testInfoFile` | path to a JSON file containing attributes to apply on the Test issues that may be created, following Jira issue update syntax | optional | - |
 | `testInfo | JSON object containing attributes to apply on the Test issues that may be created, following Jira issue update syntax | optional | - |
-
 
 ```javascript
 import { XrayDatacenterClient, XrayCloudClient, JUNIT_FORMAT } from '@xray-app/xray-automation'
@@ -172,7 +165,6 @@ let res = await xrayClient.submitResultsMultipart(file: reportFile, config: mult
 console.log('Test Execution key: ' + res.key);
 ```
 
-
 ### Associate Test Execution to Test Plan
 
 Whenever using the `submitResults` method, and for most formats, it´s possible to associate the Test Execution to an existing Test Plan.
@@ -189,7 +181,6 @@ let res = await xrayClient.associateTestExecutionToTestPlan(testExecKey, testPla
 
 console.log('Test Execution key: ' + res.key);
 ```
-
 
 ## FAQ
 
@@ -220,7 +211,6 @@ TBD
 - implement cucumber related operations/endpoints
 - timeout configuration
 - jest coverage badge
-- npm badge
 - review/refactor tests
 - REST API v1 support?
 - review error handling
