@@ -147,7 +147,7 @@ To import results with customization possibilities, which internally will use th
 
 
 ```javascript
-import { XrayDatacenterClient, XrayCloudClient, JUNIT_FORMAT } from 'xray-automation'
+import { XrayDatacenterClient, XrayCloudClient, JUNIT_FORMAT } from '@xray-app/xray-automation'
 
 ...
 let testExecInfoJson = { 
