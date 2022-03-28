@@ -111,7 +111,7 @@ console.log('Test Execution key: ' + res.key);
 
 Please note that Xray server/DC and Xray cloud support mostly the same formats, but not exactly for legacy reasons. Besides, not all formats support the same parameters; please check the respective product documentation. The following table sums this info.
 
-|reportFormat| supported Xray variant| notes |
+|report format| supported Xray variant| notes |
 | --- | --- | --- |
 | xray | cloud and server/DC | the format is not exactly the same as Xray and Jira itself are different on server/DC and cloud |
 | junit | cloud and server/DC | |
@@ -140,6 +140,10 @@ To import results with customization possibilities, which internally will use th
 | setting | description | mandatory/optional| example |
 | --- | --- | --- | --- |
 | `format` | format of the report (import&use JUNIT_FORMAT, TESTNG_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, ROBOT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT, XRAY_FORMAT) | mandatory | XRAY_FORMAT (or "xray") |
+| `testExecInfoFile` | path to a JSON file containing attributes to apply on the Test Execution issue that will be created, following Jira issue update syntax | mandatory (if testExecInfo is not provided) | - |
+| `testExecInfo` | JSON object containing attributes to apply on the Test Execution issue that will be created, following Jira issue update syntax | mandatory (if testExecInfoFile is not provided) | - |
+| `testInfoFile` | path to a JSON file containing attributes to apply on the Test issues that may be created, following Jira issue update syntax | optional | - |
+| `testInfo | JSON object containing attributes to apply on the Test issues that may be created, following Jira issue update syntax | optional | - |
 
 
 ```
@@ -180,7 +184,7 @@ let testExecKey = 'CALC-11';
 let testPlanKey = 'CALC-10';
 let res = await xrayClient.associateTestExecutionToTestPlan(testExecKey, testPlanKey);
 
-// or if you know the issue ids...
+// or if you know the issue ids... (Xray on Jira cloud only)
 // let res = await xrayClient.associateTestExecutionToTestPlanByIds('10001', '10000');
 
 console.log('Test Execution key: ' + res.key);
@@ -195,7 +199,7 @@ It's an open-source project, so it should be handled in this GitHub project and 
 
 2. Are the underlying APIs the same for Xray server/datacenter and Xray Cloud? Are the available options the same? Are the supported test automation report formats the same?
 
-Not exactly. Xray server/datacenter and Xray cloud, even though similar, are actually distinct products; besides Jira server/datacenter and Jira cloud are different between themselves and have different capabilities. This plugin makes use of the available REST APIs for Xray server/datancer and Xray cloud, so you should check them to see exactly what is supported for your environment.
+Not exactly. Xray server/datacenter and Xray cloud, even though similar, are actually distinct products; besides Jira server/datacenter and Jira cloud are different between themselves and have different capabilities. This plugin makes use of the available REST APIs for Xray server/datacenter and Xray cloud, so you should check them to see exactly what is supported for your environment.
 
 ## Contact
 
@@ -214,7 +218,6 @@ TBD
 ## TO DOs
 
 - implement cucumber related operations/endpoints
-- implement associate Test Execution to Test Plan on Xray server/DC
 - jest coverage badge
 - REST API v1 support?
 - review modules support
