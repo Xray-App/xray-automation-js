@@ -251,6 +251,7 @@ TBD
 - implement cucumber related operations/endpoints
 - timeout configuration
 - review/refactor tests
+- prettier and eslint-config-prettier?
 - REST API v1 support?
 - review error handling
 - review modules support
