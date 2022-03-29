@@ -31,6 +31,11 @@ class XrayCloudClient {
     constructor(xraySettings) {
         this.clientId = xraySettings.clientId;
         this.clientSecret = xraySettings.clientSecret;
+        if (xraySettings.timeout !== undefined)
+            this.timeout = xraySettings.timeout;
+        else
+            this.timeout = 0;
+        axios.defaults.timeout = this.timeout;
     }
 
     async submitResults(reportPath, config) {     
@@ -47,7 +52,16 @@ class XrayCloudClient {
             throw new XrayErrorResponse(error.message);
         }
 
-        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, {}).then( (response) => {
+        // use a CancelToken as the timeout setting is not reliable
+        const cancelTokenSource = axios.CancelToken.source();
+        const timeoutFn = setTimeout(() => {
+            cancelTokenSource.cancel("request timeout");
+        }, this.timeout);
+
+        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, {
+            timeout: this.timeout,
+            cancelToken: cancelTokenSource.token        
+        }).then( (response) => {
             var authToken = response.data;          
             return authToken;
         }).then( authToken => {
@@ -100,15 +114,18 @@ class XrayCloudClient {
             }
 
             return axios.post(url, reportContent, {
+                timeout: this.timeout,
+                cancelToken: cancelTokenSource.token,
                 headers: { 'Authorization': "Bearer " + authToken, "Content-Type": contentType }
             });
         }).then(function(response) {
+            clearTimeout(timeoutFn);
             return new XrayCloudResponseV2(response);       
         }).catch(function(error) {
             if (error.response !== undefined)
                 throw new XrayErrorResponse(error.response);
             else
-                throw new XrayErrorResponse(error._response);
+                throw new XrayErrorResponse(error.message || error._response);
         });
 
     }
@@ -123,7 +140,17 @@ class XrayCloudClient {
         if ((config.testExecInfoFile === undefined) && (config.testExecInfo === undefined))
             throw new XrayErrorResponse("ERROR: testExecInfoFile or testExecInfo must be defined");
 
-        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, {}).then( (response) => {
+        // use a CancelToken as the timeout setting is not reliable
+        const cancelTokenSource = axios.CancelToken.source();
+        const timeoutFn = setTimeout(() => {
+            cancelTokenSource.cancel("request timeout");
+        }, this.timeout);
+
+        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, {
+            timeout: this.timeout,
+            cancelToken: cancelTokenSource.token
+        }).then( (response) => {
+            //clearTimeout(timeoutFn);
             var authToken = response.data;          
             return authToken;
         }).then( authToken => {
@@ -133,15 +160,6 @@ class XrayCloudClient {
             } else {
                 endpointUrl = xrayCloudBaseUrl + "/import/execution/" + config.format + "/multipart";
             }
-
-            /*
-            let contentType;
-            if ([ JUNIT_FORMAT, TESTNG_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, ROBOT_FORMAT ].includes(config.format)) {
-                contentType = 'application/xml';
-            } else {
-                contentType = 'application/json';
-            }
-            */
 
             let reportContent;
             let testInfoContent;
@@ -173,28 +191,51 @@ class XrayCloudClient {
                 bodyFormData.append('testInfo', testInfoContent, 'testInfo.json');
 
             return axios.post(endpointUrl, bodyFormData, {
+                timeout: this.timeout,
+                cancelToken: cancelTokenSource.token,
                 headers: { 'Authorization': "Bearer " + authToken, ...bodyFormData.getHeaders() }
             });
         }).then(function(response) {
+            clearTimeout(timeoutFn);
             return new XrayCloudResponseV2(response);       
         }).catch(function(error) {
             if (error.response !== undefined)
                 throw new XrayErrorResponse(error.response);
             else
-                throw new XrayErrorResponse(error._response);
+                throw new XrayErrorResponse(error.message || error._response);
         });
 
     }
 
-    async authenticate() {        
-        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, {}).then( (response) => {
+    async authenticate() {   
+        // use a CancelToken as the timeout setting is not reliable
+        const cancelTokenSource = axios.CancelToken.source();
+        const timeoutFn = setTimeout(() => {
+            cancelTokenSource.cancel("request timeout");
+        }, this.timeout);
+
+        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, {
+            timeout: this.timeout,
+            cancelToken: cancelTokenSource.token
+        }).then( (response) => {
+            clearTimeout(timeoutFn);
             var authToken = response.data;          
             return authToken;
         });
     }
 
-    async associateTestExecutionToTestPlanByIds(testExecIssueId, testPlanIssueId) {        
-        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, {}).then( (response) => {
+    async associateTestExecutionToTestPlanByIds(testExecIssueId, testPlanIssueId) {  
+        // use a CancelToken as the timeout setting is not reliable
+        const cancelTokenSource = axios.CancelToken.source();
+        const timeoutFn = setTimeout(() => {
+            cancelTokenSource.cancel("request timeout");
+        }, this.timeout);
+
+        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, {
+            timeout: this.timeout,
+            cancelToken: cancelTokenSource.token
+        }).then( (response) => {
+            clearTimeout(timeoutFn);
             var authToken = response.data;          
             return authToken;
         }).then( authToken => {

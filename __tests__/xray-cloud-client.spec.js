@@ -14,6 +14,111 @@ import { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, X
 const xrayCloudBaseUrl = "https://xray.cloud.getxray.app/api/v2";        
 const authenticateUrl = xrayCloudBaseUrl + "/authenticate";
 
+
+describe('timeout handling', () => {
+  let mock;
+  let reportFile = '__tests__/resources/robot.xml';
+  const successfulAuthResponseData = '"1234567890"';
+  const successfulResponseData = {
+      "id": "38101",
+      "key": "CALC-82",
+      "self": "http://xray.example.com/rest/api/2/issue/38101"
+  }
+
+  beforeEach(() => {
+    //mock = new MockAdapter(axios, { delayResponse: 1000 });
+    //mock.onPost(authenticateUrl).reply(200, successfulAuthResponseData );
+  });
+  
+  afterEach(() => {
+    mock.resetHistory();
+  });
+
+  const withDelay = function (delay, response) { return function (config) {
+    return new Promise(function (resolve, reject) {
+        setTimeout(function () {
+            resolve(response);
+        }, delay);
+      });
+    };
+  };
+
+  
+  it('succeeds if requests take less than configured timeout', async() => {
+    mock = new MockAdapter(axios);
+    mock.onPost(authenticateUrl).reply(200, successfulAuthResponseData);
+    mock.onPost(xrayCloudBaseUrl + '/import/execution/robot?projectKey=CALC').reply(200, successfulResponseData);
+
+    const xrayCloudSettings = {
+      clientId: '0000000000',
+      clientSecret: '1111111111',
+      timeout: 2000
+    }; 
+    const xrayClient = new XrayCloudClient(xrayCloudSettings);
+
+    let reportConfig = {
+      format: ROBOT_FORMAT,
+      projectKey: 'CALC'
+    }
+
+    let response = await xrayClient.submitResults(reportFile, reportConfig);
+    expect(response._response.status).toEqual(200);
+    expect(response._response.data).toEqual(successfulResponseData);
+  });
+
+  it('returns an error if requests take more than configured timeout', async() => {
+    mock = new MockAdapter(axios);
+    mock.onPost(authenticateUrl).reply(200, successfulAuthResponseData);
+    mock.onPost(xrayCloudBaseUrl + '/import/execution/robot?projectKey=CALC').reply(withDelay(1000, [200, successfulResponseData])); // reply(200, successfulResponseData);
+
+    const xrayCloudSettings = {
+      clientId: '0000000000',
+      clientSecret: '1111111111',
+      timeout: 500
+    }; 
+    const xrayClient = new XrayCloudClient(xrayCloudSettings);
+
+    let reportConfig = {
+      format: ROBOT_FORMAT,
+      projectKey: 'CALC'
+    }
+
+    try {
+      await xrayClient.submitResults(reportFile, reportConfig);
+      throw new Error("dummy"); // should not reach here
+    } catch (error) {
+      expect(error._response).toEqual("request timeout");
+    }
+  });
+
+it('returns an error if implicit auth requests take more than configured timeout', async() => {
+  mock = new MockAdapter(axios);
+  mock.onPost(authenticateUrl).reply(withDelay(1000, [200, successfulAuthResponseData]));
+  mock.onPost(xrayCloudBaseUrl + '/import/execution/robot?projectKey=CALC').reply(200, successfulResponseData);
+
+  const xrayCloudSettings = {
+    clientId: '0000000000',
+    clientSecret: '1111111111',
+    timeout: 500
+  }; 
+  const xrayClient = new XrayCloudClient(xrayCloudSettings);
+
+  let reportConfig = {
+    format: ROBOT_FORMAT,
+    projectKey: 'CALC'
+  }
+
+  try {
+    await xrayClient.submitResults(reportFile, reportConfig);
+    throw new Error("dummy"); // should not reach here
+  } catch (error) {
+    expect(error._response).toEqual("request timeout");
+  }
+
+});
+
+});
+
 describe('authentication', () => {
     let mock;
     let xrayClient;
@@ -264,136 +369,6 @@ describe('JUnit standard endpoint', () => {
 
 });
 
-describe('JUnit standard endpoint', () => {
-    let mock;
-    let xrayClient;
-    let reportFile = '__tests__/resources/junit.xml';
-    const successfulAuthResponseData = '"1234567890"';
-    const successfulResponseData = {
-      "testExecIssue": {
-        "id": "38101",
-        "key": "CALC-82",
-        "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
-    }
-  
-    beforeEach(() => {
-      mock = new MockAdapter(axios);
-      const xrayCloudSettings = {
-        clientId: '0000000000',
-        clientSecret: '1111111111'
-      }; 
-      xrayClient = new XrayCloudClient(xrayCloudSettings);
-
-      mock.onPost(authenticateUrl).reply(200, successfulAuthResponseData );
-    });
-    
-    afterEach(() => {
-      mock.resetHistory();
-    });
-  
-    it('returns an error when submitResults is called, without projectKey or testExecKey', async() => {
-      mock.onPost(xrayCloudBaseUrl + '/import/execution/junit').reply(200, successfulResponseData);
-  
-      let reportConfig = { format: JUNIT_FORMAT };
-      try {
-        let response = await xrayClient.submitResults(reportFile, reportConfig);
-      } catch (error) {
-        expect(error._response).toEqual('ERROR: projectKey or testExecKey must be defined');
-      }
-    });
- 
-    it('sends the correct URL encoded parameters when submitResults is called', async() => {
-      mock.onPost(xrayCloudBaseUrl + '/import/execution/junit?projectKey=CALC&testPlanKey=CALC-10&testExecKey=CALC-82&fixVersion=1.0&revision=123&testEnvironments=chrome').reply(200, successfulResponseData);
-  
-      let reportConfig = {
-        format: JUNIT_FORMAT,
-        projectKey: 'CALC',
-        testPlanKey: 'CALC-10',
-        testExecKey: 'CALC-82',
-        version: '1.0',
-        revision: '123',
-        testEnvironment: 'chrome'
-      }
-      try {
-        let response = await xrayClient.submitResults(reportFile, reportConfig);
-      } catch (error) {
-          console.log(error);
-          throw error;
-      }
-    });
-  
-    it('sends the correct URL encoded parameters, for multiple testEnvironments, when submitResults is called', async() => {
-      mock.onPost(xrayCloudBaseUrl + '/import/execution/junit?projectKey=CALC&testPlanKey=CALC-10&testExecKey=CALC-82&fixVersion=1.0&revision=123&testEnvironments=chrome%3Bmac').reply(200, successfulResponseData);
-  
-      let reportConfig = {
-        format: JUNIT_FORMAT,
-        projectKey: 'CALC',
-        testPlanKey: 'CALC-10',
-        testExecKey: 'CALC-82',
-        version: '1.0',
-        revision: '123',
-        testEnvironments: ['chrome', 'mac']
-      }
-      try {
-        let response = await xrayClient.submitResults(reportFile, reportConfig);
-      } catch (error) {
-          console.log(error);
-          throw error;
-      }
-    });
-     
-    it('sends the correct payload when submitResults is called', async() => {
-      mock.onPost(xrayCloudBaseUrl + '/import/execution/junit?projectKey=CALC').reply(200, successfulResponseData);
-  
-      let reportConfig = {
-        format: JUNIT_FORMAT,
-        projectKey: 'CALC'
-      }
-      try {
-        let response = await xrayClient.submitResults(reportFile, reportConfig);
-  
-        expect(mock.history.post.length).toBe(2);
-        expect(mock.history.post[1].headers['Content-Type']).toEqual('application/xml');
-        let reportContent = fs.readFileSync(reportFile).toString('utf-8');
-        expect(mock.history.post[1].data).toEqual(reportContent);
-      } catch (error) {
-          console.log(error);
-          throw error;
-      }
-    });
-  
-    it('returns Test Execution data when submitResults is called with success', async() => {
-        mock.onPost(xrayCloudBaseUrl + '/import/execution/junit?projectKey=CALC').reply(200, successfulResponseData);
-  
-        let reportConfig = {
-        format: JUNIT_FORMAT,
-        projectKey: 'CALC'
-        }
-        try {
-            let response = await xrayClient.submitResults(reportFile, reportConfig);
-            expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
-        } catch (error) {
-            console.log(error);
-            throw error;
-        }
-  
-      });
-
-});
-
 describe('TestNG standard endpoint', () => {
     let mock;
     let xrayClient;
@@ -507,136 +482,6 @@ describe('TestNG standard endpoint', () => {
   
         let reportConfig = {
         format: TESTNG_FORMAT,
-        projectKey: 'CALC'
-        }
-        try {
-            let response = await xrayClient.submitResults(reportFile, reportConfig);
-            expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
-        } catch (error) {
-            console.log(error);
-            throw error;
-        }
-  
-      });
-
-});
-
-describe('Nunit standard endpoint', () => {
-    let mock;
-    let xrayClient;
-    let reportFile = '__tests__/resources/nunit.xml';
-    const successfulAuthResponseData = '"1234567890"';
-    const successfulResponseData = {
-      "testExecIssue": {
-        "id": "38101",
-        "key": "CALC-82",
-        "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
-    }
-  
-    beforeEach(() => {
-      mock = new MockAdapter(axios);
-      const xrayCloudSettings = {
-        clientId: '0000000000',
-        clientSecret: '1111111111'
-      }; 
-      xrayClient = new XrayCloudClient(xrayCloudSettings);
-
-      mock.onPost(authenticateUrl).reply(200, successfulAuthResponseData );
-    });
-    
-    afterEach(() => {
-      mock.resetHistory();
-    });
-  
-    it('returns an error when submitResults is called, without projectKey or testExecKey', async() => {
-      mock.onPost(xrayCloudBaseUrl + '/import/execution/nunit').reply(200, successfulResponseData);
-  
-      let reportConfig = { format: NUNIT_FORMAT };
-      try {
-        let response = await xrayClient.submitResults(reportFile, reportConfig);
-      } catch (error) {
-        expect(error._response).toEqual('ERROR: projectKey or testExecKey must be defined');
-      }
-    });
- 
-    it('sends the correct URL encoded parameters when submitResults is called', async() => {
-      mock.onPost(xrayCloudBaseUrl + '/import/execution/nunit?projectKey=CALC&testPlanKey=CALC-10&testExecKey=CALC-82&fixVersion=1.0&revision=123&testEnvironments=chrome').reply(200, successfulResponseData);
-  
-      let reportConfig = {
-        format: NUNIT_FORMAT,
-        projectKey: 'CALC',
-        testPlanKey: 'CALC-10',
-        testExecKey: 'CALC-82',
-        version: '1.0',
-        revision: '123',
-        testEnvironment: 'chrome'
-      }
-      try {
-        let response = await xrayClient.submitResults(reportFile, reportConfig);
-      } catch (error) {
-          console.log(error);
-          throw error;
-      }
-    });
-  
-    it('sends the correct URL encoded parameters, for multiple testEnvironments, when submitResults is called', async() => {
-      mock.onPost(xrayCloudBaseUrl + '/import/execution/nunit?projectKey=CALC&testPlanKey=CALC-10&testExecKey=CALC-82&fixVersion=1.0&revision=123&testEnvironments=chrome%3Bmac').reply(200, successfulResponseData);
-  
-      let reportConfig = {
-        format: NUNIT_FORMAT,
-        projectKey: 'CALC',
-        testPlanKey: 'CALC-10',
-        testExecKey: 'CALC-82',
-        version: '1.0',
-        revision: '123',
-        testEnvironments: ['chrome', 'mac']
-      }
-      try {
-        let response = await xrayClient.submitResults(reportFile, reportConfig);
-      } catch (error) {
-          console.log(error);
-          throw error;
-      }
-    });
-     
-    it('sends the correct payload when submitResults is called', async() => {
-      mock.onPost(xrayCloudBaseUrl + '/import/execution/nunit?projectKey=CALC').reply(200, successfulResponseData);
-  
-      let reportConfig = {
-        format: NUNIT_FORMAT,
-        projectKey: 'CALC'
-      }
-      try {
-        let response = await xrayClient.submitResults(reportFile, reportConfig);
-  
-        expect(mock.history.post.length).toBe(2);
-        expect(mock.history.post[1].headers['Content-Type']).toEqual('application/xml');
-        let reportContent = fs.readFileSync(reportFile).toString('utf-8');
-        expect(mock.history.post[1].data).toEqual(reportContent);
-      } catch (error) {
-          console.log(error);
-          throw error;
-      }
-    });
-  
-    it('returns Test Execution data when submitResults is called with success', async() => {
-        mock.onPost(xrayCloudBaseUrl + '/import/execution/nunit?projectKey=CALC').reply(200, successfulResponseData);
-  
-        let reportConfig = {
-        format: NUNIT_FORMAT,
         projectKey: 'CALC'
         }
         try {
@@ -1122,7 +967,7 @@ describe('Cucumber standard endpoint', () => {
 
 });
 
-describe('Cucumber standard endpoint', () => {
+describe('Xray JSON standard endpoint', () => {
     let mock;
     let xrayClient;
     let reportFile = '__tests__/resources/xray_cloud.json';
@@ -2451,6 +2296,9 @@ describe('Xray JSON multipart endpoint', () => {
     });
 
 });
+
+
+/* GraphQL requests */
 
 describe('graphQL: getTestPlanIssueId', () => {
     let mock;
