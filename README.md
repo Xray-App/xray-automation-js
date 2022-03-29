@@ -254,7 +254,7 @@ TBD
 ## TO DOs
 
 - implement cucumber related operations/endpoints
-- timeout configuration
+- timeout configuration for GraphQL requests
 - review/refactor tests
 - prettier and eslint-config-prettier?
 - REST API v1 support?
