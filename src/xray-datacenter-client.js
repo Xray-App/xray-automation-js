@@ -17,10 +17,11 @@ class XrayDatacenterClient {
         this.jiraUsername = xraySettings.jiraUsername;
         this.jiraPassword = xraySettings.jiraPassword;
         this.jiraToken = xraySettings.jiraToken;
-        if (this.time !== undefined)
+        if (xraySettings.timeout !== undefined)
             this.timeout = xraySettings.timeout;
         else
             this.timeout = 0;
+        axios.defaults.timeout = this.timeout;
     }
 
     async submitResults(reportPath, config) {		
@@ -50,12 +51,22 @@ class XrayDatacenterClient {
         } catch(error) {
             throw new XrayErrorResponse(error.message);
         }
+
         // for xray, cucumber and behave reports send the report directly on the body
         if ([ XRAY_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT ].includes(config.format)) {
+
+            // use a CancelToken as the timeout setting is not reliable
+            const cancelTokenSource = axios.CancelToken.source();
+            const timeoutFn = setTimeout(() => {
+                cancelTokenSource.cancel("request timeout");
+            }, this.timeout);
+
             return axios.post(endpointUrl, reportContent, {
                 timeout: this.timeout,
+                cancelToken: cancelTokenSource.token,
                 headers: { 'Authorization': authorizationHeaderValue, 'Content-Type': 'application/json' }
             }).then(function(response) {
+                clearTimeout(timeoutFn);
                 return new XrayDatacenterResponseV2(response);
             }).catch(function(error) {
                 throw new XrayErrorResponse(error.response);
@@ -97,13 +108,22 @@ class XrayDatacenterClient {
                 fileName = 'report.json'
             }
             bodyFormData.append('file', reportContent, fileName); 
+
+            // use a CancelToken as the timeout setting is not reliable
+            const cancelTokenSource = axios.CancelToken.source();
+            const timeoutFn = setTimeout(() => {
+                cancelTokenSource.cancel("request timeout");
+            }, this.timeout);
+
             return axios.post(url, bodyFormData, {
                 timeout: this.timeout,
+                cancelToken: cancelTokenSource.token,
                 headers: { 'Authorization': authorizationHeaderValue, ...bodyFormData.getHeaders() }
             }).then(function(response) {
+                clearTimeout(timeoutFn);
                 return new XrayDatacenterResponseV2(response);
             }).catch(function(error) {
-                throw new XrayErrorResponse(error.response);
+                throw new XrayErrorResponse(error.message || error.response);
             });   
         }
 
@@ -165,10 +185,18 @@ class XrayDatacenterClient {
         if ((testInfoContent !== undefined) && ([ JUNIT_FORMAT, TESTNG_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, ROBOT_FORMAT ].includes(config.format)))
             bodyFormData.append('testInfo', testInfoContent, 'testInfo.json');
 
+        // use a CancelToken as the timeout setting is not reliable
+        const cancelTokenSource = axios.CancelToken.source();
+        const timeoutFn = setTimeout(() => {
+            cancelTokenSource.cancel("request timeout");
+        }, this.timeout);
+
         return axios.post(endpointUrl, bodyFormData, {
             timeout: this.timeout,
+            cancelToken: cancelTokenSource.token,
             headers: { 'Authorization': authorizationHeaderValue, ...bodyFormData.getHeaders() }
         }).then(function(response) {
+            clearTimeout(timeoutFn);
             return new XrayDatacenterResponseV2(response);
         }).catch(function(error) {
             throw new XrayErrorResponse(error.response);
@@ -189,10 +217,19 @@ class XrayDatacenterClient {
         }
 
         let endpointUrl = `${this.jiraBaseUrl}/rest/raven/2.0/api/testplan/${testPlanKey}/testexecution`;
+
+        // use a CancelToken as the timeout setting is not reliable
+        const cancelTokenSource = axios.CancelToken.source();
+        const timeoutFn = setTimeout(() => {
+            cancelTokenSource.cancel("request timeout");
+        }, this.timeout);
+
         return axios.post(endpointUrl, content, {
             timeout: this.timeout,
+            cancelToken: cancelTokenSource.token,
             headers: { 'Authorization': authorizationHeaderValue, 'Content-Type': 'application/json' }
         }).then(function(response) {
+            clearTimeout(timeoutFn);
             if (response.data.length == 0)
                 return testExecKey;
             else
