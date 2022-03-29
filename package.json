@@ -1,6 +1,6 @@
 {
   "name": "@xray-app/xray-automation",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Library for uploading test results to Xray Test Management",
   "type": "module",
   "main": "src/index.js",
