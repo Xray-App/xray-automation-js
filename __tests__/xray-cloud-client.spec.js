@@ -148,14 +148,11 @@ describe('authentication', () => {
           format: JUNIT_FORMAT,
           projectKey: 'CALC'
         }
-        try {
-            let response = await xrayClient.submitResults(reportFile, reportConfig);
-            expect(mock.history.post.length).toBe(2);
-            expect(mock.history.post[0].data).toEqual("{\"client_id\":\"0000000000\",\"client_secret\":\"1111111111\"}");
-            expect(mock.history.post[1].headers['Authorization']).toEqual("Bearer dXNlcm5hbWU6cGFzc3dvcmQ=")
-        } catch (error) {
-            throw error;
-        }
+
+        await xrayClient.submitResults(reportFile, reportConfig);
+        expect(mock.history.post.length).toBe(2);
+        expect(mock.history.post[0].data).toEqual("{\"client_id\":\"0000000000\",\"client_secret\":\"1111111111\"}");
+        expect(mock.history.post[1].headers['Authorization']).toEqual("Bearer dXNlcm5hbWU6cGFzc3dvcmQ=")
     });
   
     it('is made implicitly and gives an error for invalid credentials, when using submitRequest', async() => {
@@ -173,7 +170,7 @@ describe('authentication', () => {
           projectKey: 'CALC'
         }
         try {
-            let response = await xrayClient.submitResults(reportFile, reportConfig);
+            await xrayClient.submitResults(reportFile, reportConfig);
         } catch (error) {
             expect(mock.history.post[0].data).toEqual("{\"client_id\":\"0000000000\",\"client_secret\":\"1111111111\"}");
             expect(mock.history.post.length).toBe(1);
@@ -245,20 +242,9 @@ describe('JUnit standard endpoint', () => {
     let reportFile = '__tests__/resources/junit.xml';
     const successfulAuthResponseData = '"1234567890"';
     const successfulResponseData = {
-      "testExecIssue": {
         "id": "38101",
         "key": "CALC-82",
         "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
     }
   
     beforeEach(() => {
@@ -357,9 +343,9 @@ describe('JUnit standard endpoint', () => {
         try {
             let response = await xrayClient.submitResults(reportFile, reportConfig);
             expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
+            expect(response.id).toEqual(successfulResponseData.id);
+            expect(response.key).toEqual(successfulResponseData.key);
+            expect(response.selfUrl).toEqual(successfulResponseData.self);
         } catch (error) {
             console.log(error);
             throw error;
@@ -375,20 +361,9 @@ describe('TestNG standard endpoint', () => {
     let reportFile = '__tests__/resources/testng.xml';
     const successfulAuthResponseData = '"1234567890"';
     const successfulResponseData = {
-      "testExecIssue": {
         "id": "38101",
         "key": "CALC-82",
         "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
     }
   
     beforeEach(() => {
@@ -484,16 +459,13 @@ describe('TestNG standard endpoint', () => {
         format: TESTNG_FORMAT,
         projectKey: 'CALC'
         }
-        try {
-            let response = await xrayClient.submitResults(reportFile, reportConfig);
-            expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
-        } catch (error) {
-            console.log(error);
-            throw error;
-        }
+
+        let response = await xrayClient.submitResults(reportFile, reportConfig);
+        expect(response._response.data).toEqual(successfulResponseData);
+        expect(response.id).toEqual(successfulResponseData.id);
+        expect(response.key).toEqual(successfulResponseData.key);
+        expect(response.selfUrl).toEqual(successfulResponseData.self);
+
   
       });
 
@@ -505,20 +477,9 @@ describe('Nunit standard endpoint', () => {
     let reportFile = '__tests__/resources/nunit.xml';
     const successfulAuthResponseData = '"1234567890"';
     const successfulResponseData = {
-      "testExecIssue": {
         "id": "38101",
         "key": "CALC-82",
         "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
     }
   
     beforeEach(() => {
@@ -617,9 +578,9 @@ describe('Nunit standard endpoint', () => {
         try {
             let response = await xrayClient.submitResults(reportFile, reportConfig);
             expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
+            expect(response.id).toEqual(successfulResponseData.id);
+            expect(response.key).toEqual(successfulResponseData.key);
+            expect(response.selfUrl).toEqual(successfulResponseData.self);
         } catch (error) {
             console.log(error);
             throw error;
@@ -635,20 +596,9 @@ describe('xunit standard endpoint', () => {
     let reportFile = '__tests__/resources/xunit.xml';
     const successfulAuthResponseData = '"1234567890"';
     const successfulResponseData = {
-      "testExecIssue": {
         "id": "38101",
         "key": "CALC-82",
         "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
     }
   
     beforeEach(() => {
@@ -744,16 +694,12 @@ describe('xunit standard endpoint', () => {
         format: XUNIT_FORMAT,
         projectKey: 'CALC'
         }
-        try {
-            let response = await xrayClient.submitResults(reportFile, reportConfig);
-            expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
-        } catch (error) {
-            console.log(error);
-            throw error;
-        }
+
+        let response = await xrayClient.submitResults(reportFile, reportConfig);
+        expect(response._response.data).toEqual(successfulResponseData);
+        expect(response.id).toEqual(successfulResponseData.id);
+        expect(response.key).toEqual(successfulResponseData.key);
+        expect(response.selfUrl).toEqual(successfulResponseData.self);
   
       });
 
@@ -765,20 +711,9 @@ describe('Robot Framework standard endpoint', () => {
     let reportFile = '__tests__/resources/robot.xml';
     const successfulAuthResponseData = '"1234567890"';
     const successfulResponseData = {
-      "testExecIssue": {
         "id": "38101",
         "key": "CALC-82",
         "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
     }
   
     beforeEach(() => {
@@ -877,9 +812,9 @@ describe('Robot Framework standard endpoint', () => {
         try {
             let response = await xrayClient.submitResults(reportFile, reportConfig);
             expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
+            expect(response.id).toEqual(successfulResponseData.id);
+            expect(response.key).toEqual(successfulResponseData.key);
+            expect(response.selfUrl).toEqual(successfulResponseData.self);
         } catch (error) {
             console.log(error);
             throw error;
@@ -895,20 +830,9 @@ describe('Cucumber standard endpoint', () => {
     let reportFile = '__tests__/resources/cucumber.json';
     const successfulAuthResponseData = '"1234567890"';
     const successfulResponseData = {
-      "testExecIssue": {
         "id": "38101",
         "key": "CALC-82",
         "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
     }
   
     beforeEach(() => {
@@ -955,9 +879,9 @@ describe('Cucumber standard endpoint', () => {
         try {
             let response = await xrayClient.submitResults(reportFile, reportConfig);
             expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
+            expect(response.id).toEqual(successfulResponseData.id);
+            expect(response.key).toEqual(successfulResponseData.key);
+            expect(response.selfUrl).toEqual(successfulResponseData.self);
         } catch (error) {
             console.log(error);
             throw error;
@@ -973,20 +897,9 @@ describe('Xray JSON standard endpoint', () => {
     let reportFile = '__tests__/resources/xray_cloud.json';
     const successfulAuthResponseData = '"1234567890"';
     const successfulResponseData = {
-      "testExecIssue": {
         "id": "38101",
         "key": "CALC-82",
         "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
     }
   
     beforeEach(() => {
@@ -1033,9 +946,9 @@ describe('Xray JSON standard endpoint', () => {
         try {
             let response = await xrayClient.submitResults(reportFile, reportConfig);
             expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
+            expect(response.id).toEqual(successfulResponseData.id);
+            expect(response.key).toEqual(successfulResponseData.key);
+            expect(response.selfUrl).toEqual(successfulResponseData.self);
         } catch (error) {
             console.log(error);
             throw error;
@@ -1053,20 +966,9 @@ describe('JUnit multipart endpoint', () => {
     let reportFile = '__tests__/resources/junit.xml';
     const successfulAuthResponseData = '"1234567890"';
     const successfulResponseData = {
-      "testExecIssue": {
         "id": "38101",
         "key": "CALC-82",
         "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
     }
   
     beforeEach(() => {
@@ -1224,15 +1126,13 @@ describe('JUnit multipart endpoint', () => {
         testInfoFile: '__tests__/resources/testInfo.json',
         testExecInfoFile: '__tests__/resources/testExecInfo.json'
         }
-        try {
-            let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
-            expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
-        } catch (error) {
-            throw error;
-        }
+
+        let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
+        expect(response._response.data).toEqual(successfulResponseData);
+        expect(response.id).toEqual(successfulResponseData.id);
+        expect(response.key).toEqual(successfulResponseData.key);
+        expect(response.selfUrl).toEqual(successfulResponseData.self);
+
       });
 
 });
@@ -1243,20 +1143,9 @@ describe('TestNG multipart endpoint', () => {
     let reportFile = '__tests__/resources/testng.xml';
     const successfulAuthResponseData = '"1234567890"';
     const successfulResponseData = {
-      "testExecIssue": {
         "id": "38101",
         "key": "CALC-82",
         "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
     }
   
     beforeEach(() => {
@@ -1414,15 +1303,13 @@ describe('TestNG multipart endpoint', () => {
         testInfoFile: '__tests__/resources/testInfo.json',
         testExecInfoFile: '__tests__/resources/testExecInfo.json'
         }
-        try {
-            let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
-            expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
-        } catch (error) {
-            throw error;
-        }
+
+        let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
+        expect(response._response.data).toEqual(successfulResponseData);
+        expect(response.id).toEqual(successfulResponseData.id);
+        expect(response.key).toEqual(successfulResponseData.key);
+        expect(response.selfUrl).toEqual(successfulResponseData.self);
+
       });
 
 });
@@ -1433,20 +1320,9 @@ describe('Nunit multipart endpoint', () => {
     let reportFile = '__tests__/resources/nunit.xml';
     const successfulAuthResponseData = '"1234567890"';
     const successfulResponseData = {
-      "testExecIssue": {
         "id": "38101",
         "key": "CALC-82",
         "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
     }
   
     beforeEach(() => {
@@ -1607,9 +1483,9 @@ describe('Nunit multipart endpoint', () => {
         try {
             let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
             expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
+            expect(response.id).toEqual(successfulResponseData.id);
+            expect(response.key).toEqual(successfulResponseData.key);
+            expect(response.selfUrl).toEqual(successfulResponseData.self);
         } catch (error) {
             throw error;
         }
@@ -1623,20 +1499,9 @@ describe('xunit multipart endpoint', () => {
     let reportFile = '__tests__/resources/xunit.xml';
     const successfulAuthResponseData = '"1234567890"';
     const successfulResponseData = {
-      "testExecIssue": {
         "id": "38101",
         "key": "CALC-82",
         "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
     }
   
     beforeEach(() => {
@@ -1794,15 +1659,13 @@ describe('xunit multipart endpoint', () => {
         testInfoFile: '__tests__/resources/testInfo.json',
         testExecInfoFile: '__tests__/resources/testExecInfo.json'
         }
-        try {
-            let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
-            expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
-        } catch (error) {
-            throw error;
-        }
+
+        let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
+        expect(response._response.data).toEqual(successfulResponseData);
+        expect(response.id).toEqual(successfulResponseData.id);
+        expect(response.key).toEqual(successfulResponseData.key);
+        expect(response.selfUrl).toEqual(successfulResponseData.self);
+
     });
 
 });
@@ -1813,20 +1676,9 @@ describe('Robot Framework multipart endpoint', () => {
     let reportFile = '__tests__/resources/robot.xml';
     const successfulAuthResponseData = '"1234567890"';
     const successfulResponseData = {
-      "testExecIssue": {
         "id": "38101",
         "key": "CALC-82",
         "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
     }
   
     beforeEach(() => {
@@ -1987,9 +1839,9 @@ describe('Robot Framework multipart endpoint', () => {
         try {
             let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
             expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
+            expect(response.id).toEqual(successfulResponseData.id);
+            expect(response.key).toEqual(successfulResponseData.key);
+            expect(response.selfUrl).toEqual(successfulResponseData.self);
         } catch (error) {
             throw error;
         }
@@ -2003,20 +1855,9 @@ describe('Cucumber multipart endpoint', () => {
     let reportFile = '__tests__/resources/cucumber.json';
     const successfulAuthResponseData = '"1234567890"';
     const successfulResponseData = {
-      "testExecIssue": {
         "id": "38101",
         "key": "CALC-82",
         "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
     }
   
     beforeEach(() => {
@@ -2134,15 +1975,13 @@ describe('Cucumber multipart endpoint', () => {
         testInfoFile: '__tests__/resources/testInfo.json',
         testExecInfoFile: '__tests__/resources/testExecInfo.json'
         }
-        try {
-            let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
-            expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
-        } catch (error) {
-            throw error;
-        }
+
+        let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
+        expect(response._response.data).toEqual(successfulResponseData);
+        expect(response.id).toEqual(successfulResponseData.id);
+        expect(response.key).toEqual(successfulResponseData.key);
+        expect(response.selfUrl).toEqual(successfulResponseData.self);
+
     });
 
 });
@@ -2153,20 +1992,9 @@ describe('Xray JSON multipart endpoint', () => {
     let reportFile = '__tests__/resources/xray_cloud.json';
     const successfulAuthResponseData = '"1234567890"';
     const successfulResponseData = {
-      "testExecIssue": {
         "id": "38101",
         "key": "CALC-82",
         "self": "http://xray.example.com/rest/api/2/issue/38101"
-      },
-      "testIssues": {
-        "success": [
-          {
-            "self": "http://xray.example.com/rest/api/2/issue/36600",
-            "id": "36600",
-            "key": "CALC-1"
-          }
-        ]
-      }
     }
   
     beforeEach(() => {
@@ -2287,9 +2115,9 @@ describe('Xray JSON multipart endpoint', () => {
         try {
             let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
             expect(response._response.data).toEqual(successfulResponseData);
-            expect(response.id).toEqual(successfulResponseData.testExecIssue.id);
-            expect(response.key).toEqual(successfulResponseData.testExecIssue.key);
-            expect(response.selfUrl).toEqual(successfulResponseData.testExecIssue.self);
+            expect(response.id).toEqual(successfulResponseData.id);
+            expect(response.key).toEqual(successfulResponseData.key);
+            expect(response.selfUrl).toEqual(successfulResponseData.self);
         } catch (error) {
             throw error;
         }
@@ -2382,16 +2210,13 @@ describe('graphQL: associateTestExecutionToTestPlanByIds', () => {
         }; 
         xrayClient = new XrayCloudClient(xrayCloudSettings);
 
-        try {
-            let testExecIssueId = "10001";
-            let testPlanIssueId = "10000";
-            let res = await xrayClient.associateTestExecutionToTestPlanByIds(testExecIssueId, testPlanIssueId);
-            expect(mock.history.post[0].data).toEqual("{\"client_id\":\"0000000000\",\"client_secret\":\"1111111111\"}");
-           // expect(res._response.data.addTestExecutionsToTestPlan.addedTestExecutions[0]).toEqual(testExecIssueId);
-           expect(res).toEqual(testExecIssueId);
-        } catch (error) {
-            throw error;
-        }
+        let testExecIssueId = "10001";
+        let testPlanIssueId = "10000";
+        let res = await xrayClient.associateTestExecutionToTestPlanByIds(testExecIssueId, testPlanIssueId);
+        expect(mock.history.post[0].data).toEqual("{\"client_id\":\"0000000000\",\"client_secret\":\"1111111111\"}");
+        // expect(res._response.data.addTestExecutionsToTestPlan.addedTestExecutions[0]).toEqual(testExecIssueId);
+        expect(res).toEqual(testExecIssueId);
+
     });
 
     it('does not associate a Test Execution to a Test Plan if already associated, for a valid request and successful authentication', async() => {
@@ -2414,16 +2239,13 @@ describe('graphQL: associateTestExecutionToTestPlanByIds', () => {
         }; 
         xrayClient = new XrayCloudClient(xrayCloudSettings);
 
-        try {
-            let testExecIssueId = "10001";
-            let testPlanIssueId = "10000";
-            let res = await xrayClient.associateTestExecutionToTestPlanByIds(testExecIssueId, testPlanIssueId);
-            expect(mock.history.post[0].data).toEqual("{\"client_id\":\"0000000000\",\"client_secret\":\"1111111111\"}");
-           // expect(res._response.data.addTestExecutionsToTestPlan.addedTestExecutions[0]).toEqual(testExecIssueId);
-           expect(res).toEqual(testExecIssueId);
-        } catch (error) {
-            throw error;
-        }
+        let testExecIssueId = "10001";
+        let testPlanIssueId = "10000";
+        let res = await xrayClient.associateTestExecutionToTestPlanByIds(testExecIssueId, testPlanIssueId);
+        expect(mock.history.post[0].data).toEqual("{\"client_id\":\"0000000000\",\"client_secret\":\"1111111111\"}");
+        // expect(res._response.data.addTestExecutionsToTestPlan.addedTestExecutions[0]).toEqual(testExecIssueId);
+        expect(res).toEqual(testExecIssueId);
+
     });
 
     it('returns error if failed to associate a Test Execution to a Test Plan even with a successful authentication', async() => {

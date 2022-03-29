@@ -2,9 +2,11 @@ class XrayDatacenterResponseV1 {
 
     constructor(response) {
         this._response = response;
-        this.id = response.data.id;
-        this.key = response.data.key;
-        this.selfUrl = response.data.self;
+        if (response.data !== undefined) {
+            this.id = response.data.id;
+            this.key = response.data.key;
+            this.selfUrl = response.data.self;
+        }
     }
 }
 

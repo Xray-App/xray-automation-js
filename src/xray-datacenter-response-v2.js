@@ -1,13 +1,5 @@
 class XrayDatacenterResponseV2 {
 
-    /*
-    constructor(id, key, selfUrl) {
-        this.id = id;
-        this.key = key;
-        this.selfUrl = selfUrl;
-    }
-    */
-
     constructor(response) {
         this._response = response;
         if ((response.data !== undefined) && (response.data.testExecIssue !== undefined)) {
