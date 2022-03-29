@@ -1,7 +1,9 @@
 .DS_Store
 cloud_auth.json
 example.js
-coverage/
+coverage/*.info
+coverage/*.json
+coverage/lcov-report
 target/
 .vscode/
 node_modules/
