@@ -9,7 +9,8 @@
     "lint": "eslint '**/*.js' --ignore-pattern node_modules/ --ignore-pattern '__tests__/*.spec.js'",
     "cov": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "coverage": "NODE_OPTIONS=--experimental-vm-modules jest --json --coverage --testLocationInResults --outputFile=report.json",
-    "test:badges": "npm run coverage  && jest-coverage-badges"
+    "test:badges": "npm run coverage  && jest-coverage-badges",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -37,6 +38,7 @@
   "devDependencies": {
     "axios-mock-adapter": "^1.20.0",
     "eslint": "^8.12.0",
+    "husky": "^7.0.4",
     "jest": "^27.5.1",
     "jest-coverage-badges": "^1.1.2",
     "nock": "^13.2.4",
