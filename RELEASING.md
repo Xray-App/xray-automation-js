@@ -17,6 +17,21 @@ Run lint and tests:
 npm run lint && npm test
 ```
 
+Generate coverage badges:
+
+```bash
+npm run test:badges
+```
+
+Commit badges:
+
+```bash
+git status
+git add coverage
+git commit -m "update coverage badges"
+git push
+```
+
 Publish it to npmjs.com:
 
 ```bash
