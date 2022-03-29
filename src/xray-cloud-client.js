@@ -31,6 +31,10 @@ class XrayCloudClient {
     constructor(xraySettings) {
         this.clientId = xraySettings.clientId;
         this.clientSecret = xraySettings.clientSecret;
+        if (this.time !== undefined)
+            this.timeout = xraySettings.timeout;
+        else
+            this.timeout = 0;
     }
 
     async submitResults(reportPath, config) {     
@@ -47,7 +51,7 @@ class XrayCloudClient {
             throw new XrayErrorResponse(error.message);
         }
 
-        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, {}).then( (response) => {
+        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, { timeout: this.timeout }).then( (response) => {
             var authToken = response.data;          
             return authToken;
         }).then( authToken => {
@@ -100,6 +104,7 @@ class XrayCloudClient {
             }
 
             return axios.post(url, reportContent, {
+                timeout: this.timeout,
                 headers: { 'Authorization': "Bearer " + authToken, "Content-Type": contentType }
             });
         }).then(function(response) {
@@ -123,7 +128,7 @@ class XrayCloudClient {
         if ((config.testExecInfoFile === undefined) && (config.testExecInfo === undefined))
             throw new XrayErrorResponse("ERROR: testExecInfoFile or testExecInfo must be defined");
 
-        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, {}).then( (response) => {
+        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, { timeout: this.timeout }).then( (response) => {
             var authToken = response.data;          
             return authToken;
         }).then( authToken => {
@@ -173,6 +178,7 @@ class XrayCloudClient {
                 bodyFormData.append('testInfo', testInfoContent, 'testInfo.json');
 
             return axios.post(endpointUrl, bodyFormData, {
+                timeout: this.timeout,
                 headers: { 'Authorization': "Bearer " + authToken, ...bodyFormData.getHeaders() }
             });
         }).then(function(response) {
@@ -187,7 +193,7 @@ class XrayCloudClient {
     }
 
     async authenticate() {        
-        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, {}).then( (response) => {
+        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, { timeout: this.timeout }).then( (response) => {
             var authToken = response.data;          
             return authToken;
         });

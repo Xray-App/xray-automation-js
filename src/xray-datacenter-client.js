@@ -17,6 +17,10 @@ class XrayDatacenterClient {
         this.jiraUsername = xraySettings.jiraUsername;
         this.jiraPassword = xraySettings.jiraPassword;
         this.jiraToken = xraySettings.jiraToken;
+        if (this.time !== undefined)
+            this.timeout = xraySettings.timeout;
+        else
+            this.timeout = 0;
     }
 
     async submitResults(reportPath, config) {		
@@ -49,6 +53,7 @@ class XrayDatacenterClient {
         // for xray, cucumber and behave reports send the report directly on the body
         if ([ XRAY_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT ].includes(config.format)) {
             return axios.post(endpointUrl, reportContent, {
+                timeout: this.timeout,
                 headers: { 'Authorization': authorizationHeaderValue, 'Content-Type': 'application/json' }
             }).then(function(response) {
                 return new XrayDatacenterResponseV2(response);
@@ -93,6 +98,7 @@ class XrayDatacenterClient {
             }
             bodyFormData.append('file', reportContent, fileName); 
             return axios.post(url, bodyFormData, {
+                timeout: this.timeout,
                 headers: { 'Authorization': authorizationHeaderValue, ...bodyFormData.getHeaders() }
             }).then(function(response) {
                 return new XrayDatacenterResponseV2(response);
@@ -160,6 +166,7 @@ class XrayDatacenterClient {
             bodyFormData.append('testInfo', testInfoContent, 'testInfo.json');
 
         return axios.post(endpointUrl, bodyFormData, {
+            timeout: this.timeout,
             headers: { 'Authorization': authorizationHeaderValue, ...bodyFormData.getHeaders() }
         }).then(function(response) {
             return new XrayDatacenterResponseV2(response);
@@ -183,6 +190,7 @@ class XrayDatacenterClient {
 
         let endpointUrl = `${this.jiraBaseUrl}/rest/raven/2.0/api/testplan/${testPlanKey}/testexecution`;
         return axios.post(endpointUrl, content, {
+            timeout: this.timeout,
             headers: { 'Authorization': authorizationHeaderValue, 'Content-Type': 'application/json' }
         }).then(function(response) {
             if (response.data.length == 0)

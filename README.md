@@ -48,6 +48,7 @@ import { XrayCloudClient } from '@xray-app/xray-automation'
 const xrayCloudSettings = {
     clientId: '0000000000',
     clientSecret: '1111111111'
+    timeout: '30000'
 }; 
 
 const xrayClient = new XrayCloudClient(xrayCloudSettings);
@@ -62,7 +63,8 @@ import { XrayDatacenterClient } from '@xray-app/xray-automation'
 const configWithCredentials = {
     jiraBaseUrl: 'http://myserver.jira.local',
     jiraUsername: 'username',
-    jiraPassword: 'password'
+    jiraPassword: 'password',
+    timeout: '30000'
 };
 
 // or...
@@ -70,10 +72,13 @@ const configWithCredentials = {
 const configUsingToken = {
     jiraBaseUrl: 'http://myserver.jira.local',
     jiraToken: 'xxxxxx',
+    timeout: '30000'
 };
 
 const xrayClient = new XrayDatacenterClient(configWithXXX);
 ```
+
+Optionaly, we may also set a `timeout` (in ms) that will be used whenever making requests to Xray.
 
 ### Import test results to Xray (basic scenario)
 
@@ -142,7 +147,7 @@ To import results with customization possibilities, which internally will use th
 | `testExecInfoFile` | path to a JSON file containing attributes to apply on the Test Execution issue that will be created, following Jira issue update syntax | mandatory (if testExecInfo is not provided) | - |
 | `testExecInfo` | JSON object containing attributes to apply on the Test Execution issue that will be created, following Jira issue update syntax | mandatory (if testExecInfoFile is not provided) | - |
 | `testInfoFile` | path to a JSON file containing attributes to apply on the Test issues that may be created, following Jira issue update syntax | optional | - |
-| `testInfo | JSON object containing attributes to apply on the Test issues that may be created, following Jira issue update syntax | optional | - |
+| `testInfo` | JSON object containing attributes to apply on the Test issues that may be created, following Jira issue update syntax | optional | - |
 
 ```javascript
 import { XrayDatacenterClient, XrayCloudClient, JUNIT_FORMAT } from '@xray-app/xray-automation'
