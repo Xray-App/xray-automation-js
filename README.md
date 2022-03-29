@@ -78,7 +78,7 @@ const configUsingToken = {
 const xrayClient = new XrayDatacenterClient(configWithXXX);
 ```
 
-Optionaly, we may also set a `timeout` (in ms) that will be used whenever making requests to Xray.
+Optionaly, we may also set a `timeout` (in ms) that will be used whenever making requests to Xray. The default is 50000 (i.e., 50 seconds).
 
 ### Import test results to Xray (basic scenario)
 

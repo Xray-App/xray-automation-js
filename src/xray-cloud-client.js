@@ -34,7 +34,7 @@ class XrayCloudClient {
         if (xraySettings.timeout !== undefined)
             this.timeout = xraySettings.timeout;
         else
-            this.timeout = 0;
+            this.timeout = 50000;
         axios.defaults.timeout = this.timeout;
     }
 
