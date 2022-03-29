@@ -5,6 +5,10 @@
 [![license](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/Xray-App/community)
 [![npm downloads](https://img.shields.io/npm/dm/@xray-app/xray-automation.svg?style=flat-square)](http://npm-stat.com/charts.html?package=@xray-app/xray-automation)
+![Coverage statements](/coverage/badge-statements.svg)
+![Coverage lines](/coverage/badge-lines.svg)
+![Coverage functions](/coverage/badge-functions.svg)
+![Coverage branches](/coverage/badge-branches.svg)
 
 `xray-automation` is a JavaScript library to assist on common test automation tasks, such as the ability to upload test results to [Xray](https://getxray.app) and Jira from your pipeline during CI/CD.
 
@@ -246,7 +250,6 @@ TBD
 
 - implement cucumber related operations/endpoints
 - timeout configuration
-- jest coverage badge
 - review/refactor tests
 - REST API v1 support?
 - review error handling
