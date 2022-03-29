@@ -2480,6 +2480,8 @@ describe('Xray JSON multipart endpoint', () => {
     });
 });
 
+/* other REST API related operations */
+
 describe('associateTestExecutionToTestPlan', () => {
   let mock;
   let xrayClient;
