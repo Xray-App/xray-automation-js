@@ -6,7 +6,7 @@ import XrayErrorResponse from './xray-error-response.js';
 import XrayCloudResponseV2 from './xray-cloud-response-v2.js';
 // import XrayCloudGraphQLResponseV2 from './xray-cloud-graphql-response-v2.js';
 import XrayCloudGraphQLErrorResponse from './xray-cloud-graphql-error-response.js';
-import { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT } from './index.js';
+import { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT } from './index.js';
 
 /*
 // import { request, GraphQLClient } from 'graphql-request'
@@ -26,7 +26,7 @@ const authenticateUrl = xrayCloudBaseUrl + "/authenticate";
 
 class XrayCloudClient {
 
-    supportedFormats = [ XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT ];
+    supportedFormats = [ XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT ];
 
     constructor(xraySettings) {
         this.clientId = xraySettings.clientId;
@@ -76,7 +76,7 @@ class XrayCloudClient {
             let url = endpointUrl;
 
             // all formats support GET parameters, except for xray and cucumber
-            if (![ XRAY_FORMAT, CUCUMBER_FORMAT ].includes(config.format)) {
+            if (![ XRAY_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT ].includes(config.format)) {
 
                 if ((config.projectKey === undefined) && (config.testExecKey === undefined)) {
                     throw new XrayErrorResponse('ERROR: projectKey or testExecKey must be defined');
