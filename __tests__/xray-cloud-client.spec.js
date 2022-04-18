@@ -9,7 +9,7 @@ import XrayCloudClient from '../src/xray-cloud-client.js';
 //import XrayErrorResponse from '../src/xray-error-response.js';
 //import XrayCloudResponseV2 from '../src/xray-cloud-response-v2.js';
 //import XrayCloudGraphQLResponseV2 from '../src/xray-cloud-graphql-response-v2.js';
-import { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT } from '../src/index.js';
+import { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT } from '../src/index.js';
 
 const xrayCloudBaseUrl = "https://xray.cloud.getxray.app/api/v2";        
 const authenticateUrl = xrayCloudBaseUrl + "/authenticate";
@@ -888,6 +888,73 @@ describe('Cucumber standard endpoint', () => {
         }
   
       });
+
+});
+
+describe('Behave standard endpoint', () => {
+  let mock;
+  let xrayClient;
+  let reportFile = '__tests__/resources/behave.json';
+  const successfulAuthResponseData = '"1234567890"';
+  const successfulResponseData = {
+      "id": "38101",
+      "key": "CALC-82",
+      "self": "http://xray.example.com/rest/api/2/issue/38101"
+  }
+
+  beforeEach(() => {
+    mock = new MockAdapter(axios);
+    const xrayCloudSettings = {
+      clientId: '0000000000',
+      clientSecret: '1111111111'
+    }; 
+    xrayClient = new XrayCloudClient(xrayCloudSettings);
+
+    mock.onPost(authenticateUrl).reply(200, successfulAuthResponseData );
+  });
+  
+  afterEach(() => {
+    mock.resetHistory();
+  });
+
+  
+  it('sends the correct payload when submitResults is called', async() => {
+    mock.onPost(xrayCloudBaseUrl + '/import/execution/behave').reply(200, successfulResponseData);
+
+    let reportConfig = {
+      format: BEHAVE_FORMAT
+    }
+    try {
+      await xrayClient.submitResults(reportFile, reportConfig);
+
+      expect(mock.history.post.length).toBe(2);
+      expect(mock.history.post[1].headers['Content-Type']).toEqual('application/json');
+      let reportContent = fs.readFileSync(reportFile).toString('utf-8');
+      expect(mock.history.post[1].data).toEqual(reportContent);
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+  });
+
+  it('returns Test Execution data when submitResults is called with success', async() => {
+      mock.onPost(xrayCloudBaseUrl + '/import/execution/behave').reply(200, successfulResponseData);
+
+      let reportConfig = {
+      format: BEHAVE_FORMAT
+      }
+      try {
+          let response = await xrayClient.submitResults(reportFile, reportConfig);
+          expect(response._response.data).toEqual(successfulResponseData);
+          expect(response.id).toEqual(successfulResponseData.id);
+          expect(response.key).toEqual(successfulResponseData.key);
+          expect(response.selfUrl).toEqual(successfulResponseData.self);
+      } catch (error) {
+          console.log(error);
+          throw error;
+      }
+
+    });
 
 });
 
@@ -1983,6 +2050,143 @@ describe('Cucumber multipart endpoint', () => {
         expect(response.selfUrl).toEqual(successfulResponseData.self);
 
     });
+
+});
+
+describe('Behave multipart endpoint', () => {
+  let mock;
+  let xrayClient;
+  let reportFile = '__tests__/resources/behave.json';
+  const successfulAuthResponseData = '"1234567890"';
+  const successfulResponseData = {
+      "id": "38101",
+      "key": "CALC-82",
+      "self": "http://xray.example.com/rest/api/2/issue/38101"
+  }
+
+  beforeEach(() => {
+      mock = new MockAdapter(axios);
+      const xrayCloudSettings = {
+          clientId: '0000000000',
+          clientSecret: '1111111111'
+      }; 
+      xrayClient = new XrayCloudClient(xrayCloudSettings);
+
+      mock.onPost(authenticateUrl).reply(200, successfulAuthResponseData );  
+  });
+  
+  afterEach(() => {
+    mock.resetHistory();
+  });
+
+  it('returns an error when submitResultsMultipart is called, without Test Execution related info', async() => {
+    mock.onPost(xrayCloudBaseUrl + '/import/execution/behave/multipart').reply(200, successfulResponseData);
+
+    let reportConfig = { format: BEHAVE_FORMAT };
+    try {
+      await xrayClient.submitResultsMultipart(reportFile, reportConfig);
+    } catch (error) {
+      expect(error._response).toEqual('ERROR: testExecInfoFile or testExecInfo must be defined');
+    }
+  });
+
+  it('sends the correct payload when submitResultsMultipart is called with Test Execution info', async() => {
+    mock.onPost(xrayCloudBaseUrl + '/import/execution/behave/multipart').reply(200, successfulResponseData);
+
+    let reportConfig = {
+      format: BEHAVE_FORMAT,
+      testExecInfo: {
+        "fields": {
+            "project": {
+                "key": "BOOK"
+            },
+            "summary": "Test Execution for some automated tests",
+            "issuetype": {
+                "name": "Test Execution"
+            }
+        }
+    }
+    
+    }
+    try {
+      await xrayClient.submitResultsMultipart(reportFile, reportConfig);
+
+      expect(mock.history.post.length).toBe(2);
+      const rawFormData = mock.history.post[1].data.getBuffer().toString('utf-8');
+      const boundary = mock.history.post[1].data.getBoundary();
+      const parts = multipart.parse(Buffer.from(rawFormData), boundary);
+      expect(parts.length).toBe(2);
+
+      // parse-multipart-data has a bug which doesnt process "name" and "filename" attributes at the same time
+      // and only assigns "filename" on the returned parsed part.
+      // besides, it assumes "name" and "filename" appear in this exact order on the header
+      expect(rawFormData).toEqual(expect.stringContaining(' name="results"'));
+      expect(rawFormData).toEqual(expect.stringContaining(' name="info"'));
+
+      expect(parts[0].filename).toEqual('report.json');
+      expect(parts[0].type).toEqual('application/json');
+      let reportContent = fs.readFileSync(reportFile).toString('utf-8');
+      let partContent = parts[0].data.toString('utf-8')
+      expect(partContent).toEqual(reportContent);
+      expect(parts[1].filename).toEqual('info.json');
+      expect(parts[1].type).toEqual('application/json');
+      expect(parts[1].data.toString('utf-8')).toEqual(reportConfig.testExecInfo.toString('utf-8'));
+    } catch (error) {
+      throw error;
+    }
+  });
+
+  it('sends the correct payload when submitResultsMultipart is called with Test Execution info in a file', async() => {
+    mock.onPost(xrayCloudBaseUrl + '/import/execution/behave/multipart').reply(200, successfulResponseData);
+
+    let reportConfig = {
+      format: BEHAVE_FORMAT,
+      testExecInfoFile: '__tests__/resources/testExecInfo.json',
+    }
+    try {
+      await xrayClient.submitResultsMultipart(reportFile, reportConfig);
+
+      expect(mock.history.post.length).toBe(2);
+      const rawFormData = mock.history.post[1].data.getBuffer().toString('utf-8');
+      const boundary = mock.history.post[1].data.getBoundary();
+      const parts = multipart.parse(Buffer.from(rawFormData), boundary);
+      expect(parts.length).toBe(2);
+
+      // parse-multipart-data has a bug which doesnt process "name" and "filename" attributes at the same time
+      // and only assigns "filename" on the returned parsed part.
+      // besides, it assumes "name" and "filename" appear in this exact order on the header
+      expect(rawFormData).toEqual(expect.stringContaining(' name="results"'));
+      expect(rawFormData).toEqual(expect.stringContaining(' name="info"'));
+
+      expect(parts[0].filename).toEqual('report.json');
+      expect(parts[0].type).toEqual('application/json');
+      let reportContent = fs.readFileSync(reportFile).toString('utf-8');
+      let partContent = parts[0].data.toString('utf-8')
+      expect(partContent).toEqual(reportContent);
+      expect(parts[1].filename).toEqual('info.json');
+      expect(parts[1].type).toEqual('application/json');
+      expect(parts[1].data.toString('utf-8')).toEqual(fs.readFileSync(reportConfig.testExecInfoFile).toString('utf-8'));
+    } catch (error) {
+      throw error;
+    }
+  });
+
+  it('returns Test Execution data when submitResults is called with success', async() => {
+      mock.onPost(xrayCloudBaseUrl + '/import/execution/behave/multipart').reply(200, successfulResponseData);
+
+      let reportConfig = {
+      format: BEHAVE_FORMAT,
+      testInfoFile: '__tests__/resources/testInfo.json',
+      testExecInfoFile: '__tests__/resources/testExecInfo.json'
+      }
+
+      let response = await xrayClient.submitResultsMultipart(reportFile, reportConfig);
+      expect(response._response.data).toEqual(successfulResponseData);
+      expect(response.id).toEqual(successfulResponseData.id);
+      expect(response.key).toEqual(successfulResponseData.key);
+      expect(response.selfUrl).toEqual(successfulResponseData.self);
+
+  });
 
 });
 
