@@ -169,11 +169,11 @@ class XrayCloudClient {
                 if (config.testInfoFile !== undefined)
                     testInfoContent = fs.readFileSync(config.testInfoFile).toString();
                 if (config.testInfo !== undefined)
-                    testInfoContent = config.testInfo.toString();
+                    testInfoContent = JSON.stringify(config.testInfo);
                 if (config.testExecInfoFile !== undefined)
                     testExecInfoContent = fs.readFileSync(config.testExecInfoFile).toString();
                 else
-                    testExecInfoContent = config.testExecInfo.toString();
+                    testExecInfoContent = JSON.stringify(config.testExecInfo);
             } catch(error) {
                 throw new XrayErrorResponse(error.message);
             }
