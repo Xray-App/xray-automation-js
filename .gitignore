@@ -9,3 +9,6 @@ target/
 node_modules/
 *.sh
 report.json
+tmp/
+src/features/
+src/config

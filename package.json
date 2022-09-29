@@ -6,11 +6,12 @@
   "main": "src/index.js",
   "scripts": {
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "lint": "eslint '**/*.js' --ignore-pattern node_modules/ --ignore-pattern '__tests__/*.spec.js'",
+    "lint": "eslint '**/*.js' --ignore-pattern node_modules/ --ignore-pattern '__tests__/*.spec.js' --ignore-pattern src/config/",
     "cov": "NODE_OPTIONS=--experimental-vm-modules jest --coverage",
     "coverage": "NODE_OPTIONS=--experimental-vm-modules jest --json --coverage --testLocationInResults --outputFile=report.json",
     "test:badges": "npm run coverage  && jest-coverage-badges",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "download_features": "node ./src/config/xrayReportHelper.js"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,8 @@
   "author": "Sergio Freire <sergio.freire@getxray.app>",
   "license": "BSD-3-Clause",
   "dependencies": {
+    "adm-zip": "^0.5.9",
+    "arraybuffer-to-buffer": "0.0.7",
     "axios": "^0.26.1",
     "btoa": "^1.2.1",
     "form-data": "^4.0.0",

@@ -7,6 +7,8 @@ import XrayCloudResponseV2 from './xray-cloud-response-v2.js';
 // import XrayCloudGraphQLResponseV2 from './xray-cloud-graphql-response-v2.js';
 import XrayCloudGraphQLErrorResponse from './xray-cloud-graphql-error-response.js';
 import { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT } from './index.js';
+import AdmZip from 'adm-zip';
+import arrayBufferToBuffer from 'arraybuffer-to-buffer';
 
 /*
 // import { request, GraphQLClient } from 'graphql-request'
@@ -301,7 +303,121 @@ class XrayCloudClient {
         });
     }
 
+    async downloadCucumberFeatures(config) {		
+        if (config.featuresPath === undefined || config.featuresPath === "")
+            throw new XrayErrorResponse("ERROR: features path must be specified");
+
+        if ((config.keys === undefined) && (config.filter === undefined))
+            throw new XrayErrorResponse("ERROR: XRay keys or filter must be defined");
+
+        // use a CancelToken as the timeout setting is not reliable
+        const cancelTokenSource = axios.CancelToken.source();
+        const timeoutFn = setTimeout(() => {
+            cancelTokenSource.cancel("request timeout");
+        }, this.timeout);
+
+        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, {
+            timeout: this.timeout,
+            cancelToken: cancelTokenSource.token
+        }).then( (response) => {
+            //clearTimeout(timeoutFn);
+            var authToken = response.data;          
+            return authToken;
+        }).then( authToken => {
+            let endpointUrl;
+            if (config.keys !== "") {
+                // keys: a String containing a list of issue keys separated by ";"
+                endpointUrl = xrayCloudBaseUrl + "/export/cucumber?keys=" + config.keys;
+                if (config.filter !== "") {
+                    // filter: an Integer that represents the Jira filter id
+                    endpointUrl = endpointUrl + "&filter=" + config.filter;
+                }
+            } else {
+                if (config.filter !== "") {
+                    endpointUrl = xrayCloudBaseUrl + "/export/cucumber?filter=" + config.filter;
+                } else {
+                    throw new XrayErrorResponse("ERROR: XRay keys or filter must not be empty");
+                }
+            }
+
+            return axios.get(endpointUrl, {
+                timeout: this.timeout,
+                cancelToken: cancelTokenSource.token,
+                headers: { 'Authorization': "Bearer " + authToken },
+                responseType: 'arraybuffer'
+            });
+        }).then(function(response) {
+            const buffer = arrayBufferToBuffer(response.data);
+            const zip = new AdmZip(buffer);
+            try {
+                zip.extractAllTo(config.featuresPath, true);
+            } catch(error) {
+                throw new XrayErrorResponse(error.message);
+            }
+            clearTimeout(timeoutFn);
+            return new XrayCloudResponseV2(response);       
+        }).catch(function(error) {
+            if (error.response !== undefined)
+                throw new XrayErrorResponse(error.response);
+            else
+                throw new XrayErrorResponse(error.message || error._response);
+        });
+    }
+
+    async uploadCucumberFeatures(config) {		
+        if (config.projectKey === undefined || config.projectKey === "")
+            throw new XrayErrorResponse("ERROR: project key must be specified");
+
+        if (config.featuresPath === undefined || config.featuresPath === "")
+            throw new XrayErrorResponse("ERROR: features path must be specified");
+        
+        // use a CancelToken as the timeout setting is not reliable
+        const cancelTokenSource = axios.CancelToken.source();
+        const timeoutFn = setTimeout(() => {
+            cancelTokenSource.cancel("request timeout");
+        }, this.timeout);
+
+        return axios.post(authenticateUrl, { "client_id": this.clientId, "client_secret": this.clientSecret }, {
+            timeout: this.timeout,
+            cancelToken: cancelTokenSource.token
+        }).then( (response) => {
+            //clearTimeout(timeoutFn);
+            var authToken = response.data;          
+            return authToken;
+        }).then( authToken => {
+            const endpointUrl = xrayCloudBaseUrl + "/import/feature?projectKey=" + config.projectKey;
+            const zipFile = new AdmZip();
+            let featuresData = new FormData();
+            try {
+                // features Zip file creation
+                zipFile.addLocalFolder(config.featuresPath, 'features');
+                // fs.writeFileSync('./tmp/features/features.zip', zipFile.toBuffer());
+                zipFile.writeZip('./tmp/features/features.zip');
+                // Encapsulating features file into a FormData to be sent
+                const featuresFileStream = fs.createReadStream('./tmp/features/features.zip');
+                featuresData.append('file', featuresFileStream, 'features.zip');
+            } catch(error) {
+                throw new XrayErrorResponse(error.message);
+            }
+            return axios.post(endpointUrl, featuresData, {
+                timeout: this.timeout,
+                cancelToken: cancelTokenSource.token,
+                headers: {
+                    ...featuresData.getHeaders(),
+                    'Authorization': "Bearer " + authToken
+                }
+            });
+        }).then(function(response) {
+            clearTimeout(timeoutFn);
+            return new XrayCloudResponseV2(response);      
+        }).catch(function(error) {
+            if (error.response !== undefined)
+                throw new XrayErrorResponse(error.response);
+            else
+                throw new XrayErrorResponse(error.message || error._response);
+        });
+    }
+
 }
 
-//module.exports = XrayCloudClient;
 export default XrayCloudClient;
