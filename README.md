@@ -1,4 +1,4 @@
-# Xray JavaScript client library for assisting on test automation tasks
+# Xray TypeScript & JavaScript client library for assisting on test automation tasks
 
 [![npm version](https://img.shields.io/npm/v/@xray-app/xray-automation.svg?style=flat-square)](https://www.npmjs.com/package/@xray-app/xray-automation)
 [![build workflow](https://github.com/Xray-App/xray-automation-js/actions/workflows/CI.yml/badge.svg)](https://github.com/Xray-App/xray-automation-js/actions/workflows/CI.yml)
