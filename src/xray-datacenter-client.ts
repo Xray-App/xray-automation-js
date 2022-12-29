@@ -67,7 +67,10 @@ export class XrayDatacenterClient {
       authorizationHeaderValue = "Bearer " + this.jiraToken;
     } else {
       authorizationHeaderValue =
-        "Basic " + Buffer.from(this.jiraUsername + ":" + this.jiraPassword).toString('base64');
+        "Basic " +
+        Buffer.from(this.jiraUsername + ":" + this.jiraPassword).toString(
+          "base64"
+        );
     }
 
     let reportContent;
@@ -214,7 +217,10 @@ export class XrayDatacenterClient {
       authorizationHeaderValue = "Bearer " + this.jiraToken;
     } else {
       authorizationHeaderValue =
-        "Basic " + Buffer.from(this.jiraUsername + ":" + this.jiraPassword).toString('base64');
+        "Basic " +
+        Buffer.from(this.jiraUsername + ":" + this.jiraPassword).toString(
+          "base64"
+        );
     }
 
     let reportContent;
@@ -300,7 +306,10 @@ export class XrayDatacenterClient {
       authorizationHeaderValue = "Bearer " + this.jiraToken;
     } else {
       authorizationHeaderValue =
-        "Basic " + Buffer.from(this.jiraUsername + ":" + this.jiraPassword).toString('base64');
+        "Basic " +
+        Buffer.from(this.jiraUsername + ":" + this.jiraPassword).toString(
+          "base64"
+        );
     }
 
     const content = {
