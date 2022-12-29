@@ -1,6 +1,6 @@
 {
   "name": "@xray-app/xray-automation",
-  "version": "0.3.0-beta.1",
+  "version": "0.3.0-beta.2",
   "description": "Library for uploading test results to Xray Test Management",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -18,10 +18,8 @@
     "build:esm": "node tools/cleanup esm && tsc -p config/tsconfig.esm.json",
     "build:umd": "node tools/cleanup umd && webpack --config config/webpack.config.js",
     "build:types": "node tools/cleanup types && tsc -p config/tsconfig.types.json",
-    
     "clean": "node tools/cleanup",
     "package": "npm run build && npm pack",
-
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint",
     "preversion": "npm run lint",
@@ -48,10 +46,11 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "axios": "^0.26.1",
+    "btoa": "^1.2.1",
     "form-data": "^4.0.0",
+    "graphql": "^16.6.0",
     "graphql-request": "^5.1.0",
-    "promise-retry": "^2.0.1",
-    "btoa": "^1.2.1"
+    "promise-retry": "^2.0.1"
   },
   "devDependencies": {
     "@jest/globals": "^29.3.1",
