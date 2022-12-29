@@ -7,11 +7,11 @@
   "umd:main": "dist/umd/index.js",
   "types": "dist/types/index.d.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --forceExit",
     "format": "prettier --write \"src/**/*.ts\" \"types/**/*.ts\" \"__tests__/**/*.ts\"",
     "lint": "tslint -p tsconfig.json",
     "cov": "jest --coverage",
-    "coverage": "jest --json --coverage --testLocationInResults --outputFile=report.json",
+    "coverage": "jest --json --coverage --testLocationInResults --outputFile=report.json --forceExit",
     "test:badges": "npm run coverage  && jest-coverage-badges",
     "build": "npm run build:cjs && npm run build:esm && npm run build:types",
     "build:cjs": "node tools/cleanup cjs && tsc -p config/tsconfig.cjs.json",
@@ -46,7 +46,6 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "axios": "^0.26.1",
-    "btoa": "^1.2.1",
     "form-data": "^4.0.0",
     "graphql": "^16.6.0",
     "graphql-request": "^5.1.0",

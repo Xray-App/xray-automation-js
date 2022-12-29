@@ -1,4 +1,3 @@
-// import btoa from 'btoa';
 import axios from "axios";
 import fs from "fs";
 import FormData from "form-data";
@@ -68,7 +67,7 @@ export class XrayDatacenterClient {
       authorizationHeaderValue = "Bearer " + this.jiraToken;
     } else {
       authorizationHeaderValue =
-        "Basic " + btoa(this.jiraUsername + ":" + this.jiraPassword);
+        "Basic " + Buffer.from(this.jiraUsername + ":" + this.jiraPassword).toString('base64');
     }
 
     let reportContent;
@@ -215,7 +214,7 @@ export class XrayDatacenterClient {
       authorizationHeaderValue = "Bearer " + this.jiraToken;
     } else {
       authorizationHeaderValue =
-        "Basic " + btoa(this.jiraUsername + ":" + this.jiraPassword);
+        "Basic " + Buffer.from(this.jiraUsername + ":" + this.jiraPassword).toString('base64');
     }
 
     let reportContent;
@@ -301,7 +300,7 @@ export class XrayDatacenterClient {
       authorizationHeaderValue = "Bearer " + this.jiraToken;
     } else {
       authorizationHeaderValue =
-        "Basic " + btoa(this.jiraUsername + ":" + this.jiraPassword);
+        "Basic " + Buffer.from(this.jiraUsername + ":" + this.jiraPassword).toString('base64');
     }
 
     const content = {
