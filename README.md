@@ -10,7 +10,7 @@
 ![Coverage functions](/coverage/badge-functions.svg)
 ![Coverage branches](/coverage/badge-branches.svg)
 
-`xray-automation` is a JavaScript library to assist on common test automation tasks, such as the ability to upload test results to [Xray](https://getxray.app) and Jira from your pipeline during CI/CD.
+`xray-automation` is a TypeScript & JavaScript library to assist on common test automation tasks, such as the ability to upload test results to [Xray](https://getxray.app) and Jira from your pipeline during CI/CD.
 
 **Core features:**
 
@@ -42,6 +42,22 @@ This library provides two main objects, `XrayDatacenterClient` and `XrayCloudCli
 
 For Xray cloud we need to use a client id + client secret pair, from a API key defined in Xray. Please see [API keys (client id + client secret pair) on Xray cloud](https://docs.getxray.app/display/XRAYCLOUD/Global+Settings%3A+API+Keys).
 
+For TypeScript:
+
+```typescript
+import { XrayCloudClient, XraySettings } from '@xray-app/xray-automation'
+
+const xrayCloudSettings: XraySettings = {
+    clientId: '0000000000',
+    clientSecret: '1111111111'
+    timeout: '30000'
+}; 
+
+const xrayClient: XrayCloudClient = new XrayCloudClient(xrayCloudSettings);
+```
+
+For JavaScript:
+
 ```javascript
 import { XrayCloudClient } from '@xray-app/xray-automation'
 
@@ -56,6 +72,31 @@ const xrayClient = new XrayCloudClient(xrayCloudSettings);
 
 For Xray server/datacenter, we can use basic authentication and provide a Jira username/password.
 For Xray datacenter on a compatible Jira DC version (>= 8.14), we can also use PAN (Personal Access Tokens).
+
+For TypeScript:
+
+```typescript
+import { XrayDatacenterClient, XraySettings } from '@xray-app/xray-automation'
+
+const configWithCredentials: XraySettings = {
+    jiraBaseUrl: 'http://myserver.jira.local',
+    jiraUsername: 'username',
+    jiraPassword: 'password',
+    timeout: '30000'
+};
+
+// or...
+
+const configUsingToken: XraySettings = {
+    jiraBaseUrl: 'http://myserver.jira.local',
+    jiraToken: 'xxxxxx',
+    timeout: '30000'
+};
+
+const xrayClient: XrayDatacenterClient = new XrayDatacenterClient(configWithXXX);
+```
+
+For JavaScript:
 
 ```javascript
 import { XrayDatacenterClient } from '@xray-app/xray-automation'
@@ -96,6 +137,28 @@ To import results, we need to use the method `submitResults(reportFile, reportCo
 | `version` | ersion of the SUT, that corresponds to the Jira project version/release; it will be assigned to the Test Execution issue using the "fixVersion(s)" field | optional | 1.0 |
 | `revision` | `xray.revision` | source code revision or a build identifier | optional | 123 |
 | `testEnvironments` |usually, a [test environment](https://docs.getxray.app/display/XRAYCLOUD/Working+with+Test+Environments) name/identifier (e.g., browser vendor, OS version , mobile device, testing stage) | optional | [chrome] |
+
+For TypeScript:
+
+```typescript
+import { XrayDatacenterClient, XrayCloudClient, ReportConfig, JUNIT_FORMAT } from '@xray-app/xray-automation'
+
+let reportFile = 'report.xml';
+let reportConfig: ReportConfig = {
+    format: JUNIT_FORMAT,
+    projectKey: 'BOOK',
+    version: '1.0',
+    revision: '123',
+    testPlanKey: 'CALC-10',
+    testExecKey: 'CALC-11',
+    testEnvironments: [],
+}
+
+let res = await xrayClient.submitResults(reportFile, reportConfig);
+console.log('Test Execution key: ' + res.key);
+```
+
+For JavaScript:
 
 ```javascript
 import { XrayDatacenterClient, XrayCloudClient, JUNIT_FORMAT } from '@xray-app/xray-automation'
@@ -149,6 +212,36 @@ To import results with customization possibilities, which internally will use th
 | `testInfoFile` | path to a JSON file containing attributes to apply on the Test issues that may be created, following Jira issue update syntax | optional | - |
 | `testInfo` | JSON object containing attributes to apply on the Test issues that may be created, following Jira issue update syntax | optional | - |
 
+For TypeScript:
+
+```typescript
+import { XrayDatacenterClient, XrayCloudClient, ReportConfig, JUNIT_FORMAT } from '@xray-app/xray-automation'
+
+...
+let testExecInfoJson = { 
+    "fields": {
+        "project": {
+            "key": "CALC"
+        },
+        "summary": "Test Execution for Junit tets",
+        "description": "This contains test automation results"
+    }
+};
+
+let multipartConfig: ReportConfig = {
+    format: JUNIT_FORMAT,
+    testInfoFile: 'testInfo.json',
+    // testInfo: testInfoJson,
+    testExecInfoFile: 'testExecInfo.json',
+    // testExecInfo: testExecInfoJson,
+}
+
+let res = await xrayClient.submitResultsMultipart(file: reportFile, config: multipartConfig);
+console.log('Test Execution key: ' + res.key);
+```
+
+For JavaScript:
+
 ```javascript
 import { XrayDatacenterClient, XrayCloudClient, JUNIT_FORMAT } from '@xray-app/xray-automation'
 
@@ -180,6 +273,20 @@ console.log('Test Execution key: ' + res.key);
 Whenever using the `submitResults` method, and for most formats, it´s possible to associate the Test Execution to an existing Test Plan.
 However, for some formats (and respective endpoints), this may not be possible. Also, on multipart endpoints it may not be something straightforward (e.g., you may need to know the Test Plan custom field id for Jira server/DC).
 
+For TypeScript:
+
+```typescript
+let testExecKey = 'CALC-11';
+let testPlanKey = 'CALC-10';
+let res = await xrayClient.associateTestExecutionToTestPlan(testExecKey, testPlanKey);
+
+// or if you know the issue ids... (Xray on Jira cloud only)
+// let res = await xrayClient.associateTestExecutionToTestPlanByIds('10001', '10000');
+
+console.log('Test Execution key: ' + res.key);
+```
+
+For JavaScript:
 
 ```javascript
 let testExecKey = 'CALC-11';
@@ -249,18 +356,16 @@ This project is in early stage; the setting names and other are subject to chang
 
 ## Acknowledgments
 
-TBD
+- C-J Kihl
 
 ## TO DOs
 
 - implement cucumber related operations/endpoints
 - timeout configuration for GraphQL requests
 - review/refactor tests
-- prettier and eslint-config-prettier?
 - REST API v1 support?
 - review error handling
 - review modules support
-- convert to TypeScript
 
 ## [Changelog](CHANGELOG.md)
 

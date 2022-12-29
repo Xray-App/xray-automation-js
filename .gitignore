@@ -1,11 +1,14 @@
 .DS_Store
 cloud_auth.json
 example.js
+example.ts
 coverage/*.info
 coverage/*.json
+coverage/*.xml
 coverage/lcov-report
 target/
 .vscode/
 node_modules/
 *.sh
 report.json
+dist/
