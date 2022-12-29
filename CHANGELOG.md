@@ -13,6 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+## [0.3.0] - 2022-12-29
+
+### Added
+
+- reimplement this library in TypeScript
+- add support for packagint the library in CommonJS, ESM, UMD, besides TypeScript
+
+### Fixed
+
 ## [0.2.0] - 2022-04-18
 
 ### Added
@@ -54,7 +63,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-[unreleased]: https://github.com/Xray-App/xray-automation-js/compare/0.2.0...HEAD
+[unreleased]: https://github.com/Xray-App/xray-automation-js/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/Xray-App/xray-automation-js/releases/tag/0.3.0
 [0.2.0]: https://github.com/Xray-App/xray-automation-js/releases/tag/0.2.0
 [0.1.4]: https://github.com/Xray-App/xray-automation-js/releases/tag/0.1.4
 [0.1.3]: https://github.com/Xray-App/xray-automation-js/releases/tag/0.1.3
