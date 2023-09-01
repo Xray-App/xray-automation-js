@@ -16,5 +16,22 @@ declare const NUNIT_FORMAT = "nunit";
 declare const XUNIT_FORMAT = "xunit";
 declare const CUCUMBER_FORMAT = "cucumber";
 declare const BEHAVE_FORMAT = "behave";
-export { XRAY_FORMAT, JUNIT_FORMAT, TESTNG_FORMAT, ROBOT_FORMAT, NUNIT_FORMAT, XUNIT_FORMAT, CUCUMBER_FORMAT, BEHAVE_FORMAT, XrayDatacenterClient, XrayErrorResponse, XrayDatacenterResponseV1, XrayDatacenterResponseV2, XrayCloudClient, XrayCloudGraphQLResponseV2, XrayCloudGraphQLErrorResponse, XrayCloudResponseV2, };
+export {
+  XRAY_FORMAT,
+  JUNIT_FORMAT,
+  TESTNG_FORMAT,
+  ROBOT_FORMAT,
+  NUNIT_FORMAT,
+  XUNIT_FORMAT,
+  CUCUMBER_FORMAT,
+  BEHAVE_FORMAT,
+  XrayDatacenterClient,
+  XrayErrorResponse,
+  XrayDatacenterResponseV1,
+  XrayDatacenterResponseV2,
+  XrayCloudClient,
+  XrayCloudGraphQLResponseV2,
+  XrayCloudGraphQLErrorResponse,
+  XrayCloudResponseV2,
+};
 export type { XraySettings, ReportConfig };
