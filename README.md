@@ -49,7 +49,7 @@ import { XrayCloudClient, XraySettings } from '@xray-app/xray-automation'
 
 const xrayCloudSettings: XraySettings = {
     clientId: '0000000000',
-    clientSecret: '1111111111'
+    clientSecret: '1111111111',
     timeout: '30000'
 }; 
 
@@ -63,7 +63,7 @@ import { XrayCloudClient } from '@xray-app/xray-automation'
 
 const xrayCloudSettings = {
     clientId: '0000000000',
-    clientSecret: '1111111111'
+    clientSecret: '1111111111',
     timeout: '30000'
 }; 
 
@@ -171,7 +171,7 @@ let reportConfig = {
     revision: '123',
     testPlanKey: 'CALC-10',
     testExecKey: 'CALC-11',
-    testEnvironments: [],
+    testEnvironments: []
 }
 
 let res = await xrayClient.submitResults(reportFile, reportConfig);
