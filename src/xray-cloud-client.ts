@@ -354,8 +354,9 @@ export class XrayCloudClient {
         return graphQLClient.request(mutation);
       })
       .then((response) => {
+        const res = response as { data: { addTestExecutionsToTestPlan: { addedTestExecutions: string[] } } };
         return (
-          response.data.addTestExecutionsToTestPlan.addedTestExecutions[0] ||
+          res.data.addTestExecutionsToTestPlan.addedTestExecutions[0] ||
           testExecIssueId
         );
         // return new XrayCloudGraphQLResponseV2(response, response.data.addTestExecutionsToTestPlan.addedTestExecutions[0] || testExecIssueId);
@@ -392,7 +393,8 @@ export class XrayCloudClient {
         return graphQLClient.request(query);
       })
       .then((response) => {
-        return response.getTestPlans.results[0].issueId;
+        const res = response as { getTestPlans: { results: { issueId: string }[] } };
+        return res.getTestPlans.results[0].issueId;
       })
       .catch((error) => {
         const errorMessages = error.response.errors.map((err: any) => {
