@@ -17,8 +17,7 @@ import {
   CUCUMBER_FORMAT,
   BEHAVE_FORMAT,
   ReportConfig,
-  XraySettings,
-  XrayErrorResponse,
+  XraySettings
 } from "../src/index";
 
 describe("timeout handling", () => {
