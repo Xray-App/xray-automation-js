@@ -17,7 +17,7 @@
     "build:cjs": "node tools/cleanup cjs && tsc -p config/tsconfig.cjs.json",
     "build:esm": "node tools/cleanup esm && tsc -p config/tsconfig.esm.json",
     "build:umd": "node tools/cleanup umd && webpack --config config/webpack.config.js",
-    "build:types": "node tools/cleanup types && tsc -p config/tsconfig.types.json",
+    "build:types": "node tools/cleanup types && tsc -p config/tsconfig.types.json && cp types/xray-settings.d.ts dist/types/xray-settings.d.ts && cp types/report-config.d.ts dist/types/report-config.d.ts",
     "clean": "node tools/cleanup",
     "package": "npm run build && npm pack",
     "prepare": "husky install && npm run build",
