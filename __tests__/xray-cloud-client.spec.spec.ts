@@ -1346,7 +1346,7 @@ describe("JUnit multipart endpoint", () => {
       expect(parts[1].filename).toEqual("info.json");
       expect(parts[1].type).toEqual("application/json");
       expect(parts[1].data.toString("utf-8")).toEqual(
-        reportConfig.testExecInfo.toString("utf-8")
+        JSON.stringify(reportConfig.testExecInfo)
       );
     } catch (error: any) {
       throw error;
@@ -1561,7 +1561,7 @@ describe("TestNG multipart endpoint", () => {
       expect(parts[1].filename).toEqual("info.json");
       expect(parts[1].type).toEqual("application/json");
       expect(parts[1].data.toString("utf-8")).toEqual(
-        reportConfig.testExecInfo.toString("utf-8")
+        JSON.stringify(reportConfig.testExecInfo)
       );
     } catch (error: any) {
       throw error;
@@ -1776,7 +1776,7 @@ describe("Nunit multipart endpoint", () => {
       expect(parts[1].filename).toEqual("info.json");
       expect(parts[1].type).toEqual("application/json");
       expect(parts[1].data.toString("utf-8")).toEqual(
-        reportConfig.testExecInfo.toString("utf-8")
+        JSON.stringify(reportConfig.testExecInfo)
       );
     } catch (error: any) {
       throw error;
@@ -1994,7 +1994,7 @@ describe("xunit multipart endpoint", () => {
       expect(parts[1].filename).toEqual("info.json");
       expect(parts[1].type).toEqual("application/json");
       expect(parts[1].data.toString("utf-8")).toEqual(
-        reportConfig.testExecInfo.toString("utf-8")
+        JSON.stringify(reportConfig.testExecInfo)
       );
     } catch (error: any) {
       throw error;
@@ -2209,7 +2209,7 @@ describe("Robot Framework multipart endpoint", () => {
       expect(parts[1].filename).toEqual("info.json");
       expect(parts[1].type).toEqual("application/json");
       expect(parts[1].data.toString("utf-8")).toEqual(
-        reportConfig.testExecInfo.toString("utf-8")
+        JSON.stringify(reportConfig.testExecInfo)
       );
     } catch (error: any) {
       throw error;
@@ -2427,7 +2427,7 @@ describe("Cucumber multipart endpoint", () => {
       expect(parts[1].filename).toEqual("info.json");
       expect(parts[1].type).toEqual("application/json");
       expect(parts[1].data.toString("utf-8")).toEqual(
-        reportConfig.testExecInfo.toString("utf-8")
+        JSON.stringify(reportConfig.testExecInfo)
       );
     } catch (error: any) {
       throw error;
@@ -2585,7 +2585,7 @@ describe("Behave multipart endpoint", () => {
       expect(parts[1].filename).toEqual("info.json");
       expect(parts[1].type).toEqual("application/json");
       expect(parts[1].data.toString("utf-8")).toEqual(
-        reportConfig.testExecInfo.toString("utf-8")
+        JSON.stringify(reportConfig.testExecInfo)
       );
     } catch (error: any) {
       throw error;
@@ -2746,7 +2746,7 @@ describe("Xray JSON multipart endpoint", () => {
       expect(parts[1].filename).toEqual("info.json");
       expect(parts[1].type).toEqual("application/json");
       expect(parts[1].data.toString("utf-8")).toEqual(
-        reportConfig.testExecInfo.toString("utf-8")
+        JSON.stringify(reportConfig.testExecInfo)
       );
     } catch (error: any) {
       throw error;
